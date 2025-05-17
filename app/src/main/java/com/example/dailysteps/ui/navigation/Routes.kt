@@ -6,4 +6,5 @@ object Routes {
     const val REVIEW = "review"
     const val HISTORY = "history"
     const val STATS  = "stats"
+    const val SETTINGS = "settings"
 }

@@ -3,9 +3,9 @@ package com.example.dailysteps.ui.navigation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 // Добавьте эти импорты:
-import com.example.dailysteps.domain.usecase.GetTasksUseCase
-import com.example.dailysteps.domain.usecase.AddTaskUseCase
-import com.example.dailysteps.domain.usecase.ToggleDoneUseCase
+import com.example.dailysteps.domain.usecase.tasks.GetTasksUseCase
+import com.example.dailysteps.domain.usecase.tasks.AddTaskUseCase
+import com.example.dailysteps.domain.usecase.tasks.ToggleDoneUseCase
 
 /**
  * Factory для MainViewModel (3 usecases).

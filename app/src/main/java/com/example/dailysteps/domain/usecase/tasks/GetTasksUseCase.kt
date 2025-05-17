@@ -1,4 +1,4 @@
-package com.example.dailysteps.domain.usecase
+package com.example.dailysteps.domain.usecase.tasks
 
 import com.example.dailysteps.data.model.DailyTask
 import com.example.dailysteps.data.repository.TaskRepository

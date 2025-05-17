@@ -2,10 +2,9 @@ package com.example.dailysteps.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.dailysteps.domain.usecase.GetStreakUseCase
-import com.example.dailysteps.domain.usecase.GetTaskStreaksUseCase
-import com.example.dailysteps.domain.usecase.GetTasksUseCase
-import com.example.dailysteps.domain.usecase.DomainTaskStreak
+import com.example.dailysteps.domain.usecase.stats.GetStreakUseCase
+import com.example.dailysteps.domain.usecase.stats.GetTaskStreaksUseCase
+import com.example.dailysteps.domain.usecase.tasks.GetTasksUseCase
 import kotlinx.coroutines.flow.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter

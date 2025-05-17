@@ -13,76 +13,83 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.dailysteps.data.model.DailyTask
 import com.example.dailysteps.data.model.DailyDayNote
+import com.example.dailysteps.ui.components.StandardTopBar
 import kotlinx.coroutines.flow.StateFlow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DailyReviewScreen(
     tasks: StateFlow<List<DailyTask>>,
-    dayNote: StateFlow<DailyDayNote?>,
+    dayNote: StateFlow<String>,
     onToggle: (DailyTask) -> Unit,
     onSaveNote: (String) -> Unit,
-    onNext: () -> Unit,
-    onBack: () -> Unit
+    onCompleteDay: () -> Unit,       // ← новый
+    onDismissCompletion: () -> Unit,    // ← новый
+    completionMessage: StateFlow<String?>, // ← новый
+    onBack: () -> Unit,
+    onSettings: () -> Unit,    // ← добавлено
+    onNext: () -> Unit
+
 ) {
     val list by tasks.collectAsState()
     val note by dayNote.collectAsState()
-    var editNote by remember { mutableStateOf(note?.note ?: "") }
-    var dialogOpen by remember { mutableStateOf(false) }
-
-    if (dialogOpen) {
-        AlertDialog(
-            onDismissRequest = { dialogOpen = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    onSaveNote(editNote)
-                    dialogOpen = false
-                }) { Text("Save") }
-            },
-            text = {
-                OutlinedTextField(
-                    value = editNote,
-                    onValueChange = { editNote = it },
-                    label = { Text("Day note") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        )
-    }
-
+    val msg by completionMessage.collectAsState()
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Review Day") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { dialogOpen = true }) {
-                        Icon(Icons.Default.NoteAdd, contentDescription = "Note")
-                    }
-                }
+            StandardTopBar(
+                title      = "Review Day",
+                onBack     = onBack,
+                onSettings = onSettings
             )
         },
         bottomBar = {
-            Button(onClick = onNext, Modifier.fillMaxWidth().padding(16.dp)) {
-                Text("History")
+            Button(
+                onClick = onCompleteDay,
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text("Hotovo")
             }
         }
     ) { padding ->
-        LazyColumn(
-            contentPadding = padding,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(16.dp)
+        Column(
+            Modifier
+                .padding(padding)
+                .padding(16.dp)
         ) {
-            items(list) { task ->
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(checked = task.done, onCheckedChange = { onToggle(task) })
-                    Text(task.description)
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(list, key = { it.id }) { task ->
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(checked = task.done, onCheckedChange = { onToggle(task) })
+                        Text(task.description, Modifier.padding(start = 8.dp))
+                    }
                 }
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = note,
+                onValueChange = onSaveNote,
+                placeholder = { Text("Заметка на день") },
+                modifier = Modifier.fillMaxWidth(),
+                maxLines = 5
+            )
+            // 4) Показываем диалог по готовности
+            if (msg != null) {
+                AlertDialog(
+                    onDismissRequest = onDismissCompletion,
+                    title = { Text("Итоги дня") },
+                    text = { Text(msg!!) },
+                    confirmButton = {
+                        TextButton(onClick = onDismissCompletion) {
+                            Text("OK")
+                        }
+                    }
+                )
             }
         }
     }
 }
+

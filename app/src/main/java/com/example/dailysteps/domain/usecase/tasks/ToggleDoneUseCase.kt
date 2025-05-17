@@ -1,12 +1,12 @@
-package com.example.dailysteps.domain.usecase
+package com.example.dailysteps.domain.usecase.tasks
 
 import com.example.dailysteps.data.model.DailyTask
 import com.example.dailysteps.data.repository.TaskRepository
 
-class UpdateTaskUseCase(
+class ToggleDoneUseCase(
     private val repo: TaskRepository
 ) {
     suspend operator fun invoke(task: DailyTask) {
-        repo.update(task)
+        repo.update(task.copy(done = !task.done))
     }
 }
