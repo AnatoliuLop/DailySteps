@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.example.dailysteps.data.model.DailyTask
 import com.example.dailysteps.data.model.DailyDayNote
 import com.example.dailysteps.ui.components.StandardTopBar
+import com.example.dailysteps.ui.screens.components.CollapsibleList
 import kotlinx.coroutines.flow.StateFlow
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -23,72 +24,70 @@ fun DailyReviewScreen(
     dayNote: StateFlow<String>,
     onToggle: (DailyTask) -> Unit,
     onSaveNote: (String) -> Unit,
-    onCompleteDay: () -> Unit,       // ← новый
-    onDismissCompletion: () -> Unit,    // ← новый
-    completionMessage: StateFlow<String?>, // ← новый
+    onCompleteDay: () -> Unit,
+    onDismissCompletion: () -> Unit,
+    completionMessage: StateFlow<String?>,
     onBack: () -> Unit,
-    onSettings: () -> Unit,    // ← добавлено
+    onSettings: () -> Unit,
     onNext: () -> Unit
-
 ) {
     val list by tasks.collectAsState()
     val note by dayNote.collectAsState()
     val msg by completionMessage.collectAsState()
+
     Scaffold(
         topBar = {
-            StandardTopBar(
-                title      = "Review Day",
-                onBack     = onBack,
-                onSettings = onSettings
-            )
+            StandardTopBar("Review Day", onBack, onSettings)
         },
         bottomBar = {
-            Button(
-                onClick = onCompleteDay,
-                Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text("Hotovo")
+            Column(Modifier.fillMaxWidth().padding(16.dp)) {
+                OutlinedTextField(
+                    value = note,
+                    onValueChange = onSaveNote,
+                    placeholder = { Text("Заметка на день") },
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 5
+                )
+                Spacer(Modifier.height(8.dp))
+                Button(onClick = onCompleteDay, Modifier.fillMaxWidth()) {
+                    Text("Hotovo")
+                }
             }
         }
     ) { padding ->
-        Column(
-            Modifier
+        CollapsibleList(
+            items = list,
+            threshold = 6,
+            modifier = Modifier
                 .padding(padding)
-                .padding(16.dp)
-        ) {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(list, key = { it.id }) { task ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(checked = task.done, onCheckedChange = { onToggle(task) })
-                        Text(task.description, Modifier.padding(start = 8.dp))
+                .fillMaxSize(),
+            collapseLabel = "Показать все задания"
+        ) { task ->
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    checked = task.done,
+                    onCheckedChange = { onToggle(task) }
+                )
+                Text(task.description, Modifier.padding(start = 8.dp))
+            }
+        }
+
+        if (msg != null) {
+            AlertDialog(
+                onDismissRequest = onDismissCompletion,
+                title = { Text("Итоги дня") },
+                text = { Text(msg!!) },
+                confirmButton = {
+                    TextButton(onClick = onDismissCompletion) {
+                        Text("OK")
                     }
                 }
-            }
-
-            Spacer(Modifier.height(16.dp))
-
-            OutlinedTextField(
-                value = note,
-                onValueChange = onSaveNote,
-                placeholder = { Text("Заметка на день") },
-                modifier = Modifier.fillMaxWidth(),
-                maxLines = 5
             )
-            // 4) Показываем диалог по готовности
-            if (msg != null) {
-                AlertDialog(
-                    onDismissRequest = onDismissCompletion,
-                    title = { Text("Итоги дня") },
-                    text = { Text(msg!!) },
-                    confirmButton = {
-                        TextButton(onClick = onDismissCompletion) {
-                            Text("OK")
-                        }
-                    }
-                )
-            }
         }
     }
 }

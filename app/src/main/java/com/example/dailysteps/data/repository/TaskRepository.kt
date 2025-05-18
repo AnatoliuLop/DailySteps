@@ -1,6 +1,7 @@
 package com.example.dailysteps.data.repository
 
 import com.example.dailysteps.data.model.DailyTask
+import com.example.dailysteps.data.model.DateRateEntity
 import kotlinx.coroutines.flow.Flow
 
 interface TaskRepository {
@@ -11,4 +12,6 @@ interface TaskRepository {
     suspend fun delete(task: DailyTask)
     // ← объявляем новый метод
     fun getByDefaultTaskId(defaultTaskId: Int): Flow<List<DailyTask>>
+    fun getAllDates(): Flow<List<String>>
+    fun getCompletionRatesInPeriod(start: String, end: String): Flow<List<DateRateEntity>>
 }

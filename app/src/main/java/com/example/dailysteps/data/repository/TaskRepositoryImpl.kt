@@ -2,6 +2,7 @@ package com.example.dailysteps.data.repository
 
 import com.example.dailysteps.data.local.DailyTaskDao
 import com.example.dailysteps.data.model.DailyTask
+import com.example.dailysteps.data.model.DateRateEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -30,4 +31,13 @@ class TaskRepositoryImpl(
     }
     override fun getByDefaultTaskId(defaultTaskId: Int): Flow<List<DailyTask>> =
         dao.getByDefaultTaskId(defaultTaskId)
+
+    override fun getAllDates(): Flow<List<String>> =
+        dao.getAllDates()
+
+    override fun getCompletionRatesInPeriod(
+        start: String,
+        end: String
+    ): Flow<List<DateRateEntity>> =
+        dao.getCompletionRatesInPeriod(start, end)
 }

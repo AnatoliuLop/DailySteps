@@ -1,80 +1,60 @@
 package com.example.dailysteps.ui.screens
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.TopAppBar
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.unit.dp
+import com.example.dailysteps.data.model.DateRateEntity
+import com.example.dailysteps.ui.components.StandardTopBar
+import kotlinx.coroutines.flow.StateFlow
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryScreen(
-    onDaySelected: (LocalDate) -> Unit,
-    onBack: () -> Unit
+    historyRates: StateFlow<List<DateRateEntity>>,
+    onDaySelected: (String) -> Unit,
+    onBack: () -> Unit,
+    onSettings: () -> Unit
 ) {
-    val today = LocalDate.now()
-    val month = today.month
-    val year = today.year
-    val daysInMonth = today.lengthOfMonth()
-    val fmt = DateTimeFormatter.ofPattern("MMM yyyy")
+    val list by historyRates.collectAsState()
+    val today = LocalDate.now().format(DateTimeFormatter.ISO_DATE)
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("${month.name.lowercase().capitalize()} $year") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                }
-            )
+            StandardTopBar("History", onBack, onSettings)
         }
     ) { padding ->
-        val cols = 7
-        Column(modifier = Modifier.padding(padding).padding(16.dp)) {
-            for (weekStart in 1..daysInMonth step cols) {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                    (weekStart until (weekStart + cols)).forEach { day ->
-                        if (day <= daysInMonth) {
-                            val date = LocalDate.of(year, month, day)
-                            // Цвет по логике (заглушка: белый)
-                            val bg = if (date == today) Color.Yellow else Color.LightGray
-                            Canvas(
-                                modifier = Modifier
-                                    .size(36.dp)
-                                    .clickable { onDaySelected(date) }
-                            ) {
-                                drawCircle(color = bg)
-                                drawContext.canvas.nativeCanvas.drawText(
-                                    day.toString(),
-                                    size.width / 2,
-                                    size.height / 2 + 8f,
-                                    android.graphics.Paint().apply {
-                                        textAlign = android.graphics.Paint.Align.CENTER
-                                        textSize = 24f
-                                        color = android.graphics.Color.BLACK
-                                    }
-                                )
-                            }
-                        } else {
-                            Spacer(Modifier.size(36.dp))
-                        }
-                    }
+        LazyColumn(
+            Modifier
+                .padding(padding)
+                .fillMaxSize(),
+            contentPadding = PaddingValues(16.dp)
+        ) {
+            items(list) { entry ->
+                // Если это сегодня и pct<1 → в процессе
+                val label = if (entry.date == today && entry.pct < 1.0) {
+                    "В процессе"
+                } else {
+                    "${(entry.pct * 100).toInt()} %"
                 }
-                Spacer(Modifier.height(8.dp))
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                        .clickable { onDaySelected(entry.date) },
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(entry.date)
+                    Text(label)
+                }
             }
         }
     }

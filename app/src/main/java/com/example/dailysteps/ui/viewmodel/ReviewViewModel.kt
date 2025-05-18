@@ -3,30 +3,36 @@ package com.example.dailysteps.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dailysteps.data.preferences.PreferencesManager
 import com.example.dailysteps.data.model.DailyTask
-import com.example.dailysteps.domain.usecase.daynote.GetDayNoteUseCase
-import com.example.dailysteps.domain.usecase.daynote.SaveDayNoteUseCase
-import com.example.dailysteps.domain.usecase.tasks.GetTasksUseCase
-import com.example.dailysteps.domain.usecase.tasks.ToggleDoneUseCase
+import com.example.dailysteps.domain.usecase.daynote.*
+import com.example.dailysteps.domain.usecase.tasks.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class ReviewViewModel(
+    prefs: PreferencesManager,
     private val getTasksUseCase: GetTasksUseCase,
     private val toggleDoneUseCase: ToggleDoneUseCase,
     private val getDayNoteUseCase: GetDayNoteUseCase,
     private val saveDayNoteUseCase: SaveDayNoteUseCase
 ) : ViewModel() {
 
-    val tasks: StateFlow<List<DailyTask>> =
-        getTasksUseCase(LocalDate.now())
-            .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    private val iso = DateTimeFormatter.ISO_DATE
 
-    val dayNote: StateFlow<String> =
-        getDayNoteUseCase()
-            .map { it?.note ?: "" }
-            .stateIn(viewModelScope, SharingStarted.Lazily, "")
+    private val dateFlow: Flow<LocalDate> = prefs.lastDate
+        .map { it.takeIf(String::isNotBlank) ?: LocalDate.now().format(iso) }
+        .map { LocalDate.parse(it, iso) }
+
+    val tasks: StateFlow<List<DailyTask>> = dateFlow
+        .flatMapLatest { date -> getTasksUseCase(date) }
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    val dayNote: StateFlow<String> = getDayNoteUseCase()
+        .map { it?.note.orEmpty() }
+        .stateIn(viewModelScope, SharingStarted.Lazily, "")
 
     fun toggle(task: DailyTask) = viewModelScope.launch {
         toggleDoneUseCase(task)
@@ -42,7 +48,8 @@ class ReviewViewModel(
 
     // 2) completeDay считает прогресс и выставляет сообщение
     fun completeDay() = viewModelScope.launch {
-        val todayTasks = getTasksUseCase(LocalDate.now()).first()
+        val date = dateFlow.first()
+        val todayTasks = getTasksUseCase(date).first()
         val total = todayTasks.size
         val doneCount = todayTasks.count { it.done }
 

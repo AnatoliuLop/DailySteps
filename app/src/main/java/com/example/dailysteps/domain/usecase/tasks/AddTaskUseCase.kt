@@ -1,3 +1,4 @@
+// app/src/main/java/com/example/dailysteps/domain/usecase/tasks/AddTaskUseCase.kt
 package com.example.dailysteps.domain.usecase.tasks
 
 import com.example.dailysteps.data.model.DailyTask
@@ -5,21 +6,27 @@ import com.example.dailysteps.data.repository.TaskRepository
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class AddTaskUseCase(
-    private val repo: TaskRepository
-) {
+class AddTaskUseCase(private val repo: TaskRepository) {
     private val fmt = DateTimeFormatter.ISO_DATE
 
+    /**
+     * @param description  текст задачи
+     * @param category     категория
+     * @param dateIso      дата в формате ISO (по умолчанию — сегодня)
+     * @param defaultTaskId  id шаблона задачи (0, если это "ручная" задача)
+     */
     suspend operator fun invoke(
         description: String,
-        category: String = "general"
+        category: String = "general",
+        dateIso: String = LocalDate.now().format(fmt),
+        defaultTaskId: Int = 0
     ) {
-        val date = LocalDate.now().format(fmt)
-        repo.insert(DailyTask(
-            date = date,
-            defaultTaskId = null,
+        val task = DailyTask(
+            date = dateIso,
+            defaultTaskId = defaultTaskId,
             category = category,
             description = description
-        ))
+        )
+        repo.insert(task)
     }
 }

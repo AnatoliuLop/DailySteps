@@ -19,6 +19,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.dailysteps.data.model.DailyTask
 import com.example.dailysteps.ui.components.StandardTopBar
+import com.example.dailysteps.ui.screens.components.CollapsibleList
+import com.example.dailysteps.ui.screens.components.TaskItem
 import kotlinx.coroutines.flow.StateFlow
 
 @SuppressLint("Range")
@@ -28,128 +30,65 @@ fun DailyPlanScreen(
     tasks: StateFlow<List<DailyTask>>,
     onAdd: (String) -> Unit,
     onNoteChange: (DailyTask, String) -> Unit,
-    onEdit: (DailyTask, String) -> Unit,      // ← новый
-    onDelete: (DailyTask) -> Unit,            // ← новый
+    onEdit: (DailyTask, String) -> Unit,
+    onDelete: (DailyTask) -> Unit,
     onBack: () -> Unit,
-    onNext: () -> Unit,
-    onSettings: () -> Unit         // ← новый параметр
+    onSettings: () -> Unit,
+    onNext: () -> Unit
 ) {
     val list by tasks.collectAsState()
     var newText by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
-            StandardTopBar(
-                title = "Daily Plan",
-                onBack = onBack,
-                onSettings = onSettings
-            )
+            StandardTopBar("Daily Plan", onBack, onSettings)
         },
         bottomBar = {
-            Button(
-                onClick = onNext,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text("Review")
-            }
-        }
-    )  { padding ->
-        Column(
-            Modifier
-                .padding(padding)
-                .padding(16.dp)
-        ) {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(list, key = { it.id }) { task ->
-                    var isEditing by remember(task.id) { mutableStateOf(false) }
-                    var draftDesc by remember(task.id) { mutableStateOf(task.description) }
-                    var noteText by remember(task.id) { mutableStateOf(task.note ?: "") }
-
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-
-                        // 1) название / inline-редактор
-                        if (isEditing) {
-                            OutlinedTextField(
-                                value = draftDesc,
-                                onValueChange = { draftDesc = it },
-                                singleLine = true,
-                                modifier = Modifier.weight(1f),
-                                trailingIcon = {
-                                    IconButton(onClick = {
-                                        onEdit(task, draftDesc.trim())
-                                        isEditing = false
-                                    }) {
-                                        Icon(Icons.Default.Check, "Save")
-                                    }
-                                }
-                            )
-                        } else {
-                            Box(
-                                Modifier
-                                    .weight(1f)
-                                    .fillMaxHeight(),
-                                contentAlignment = Alignment.CenterStart
-                            ) {
-                                Text(task.description)
-                            }
+            Column(Modifier.fillMaxWidth().padding(16.dp)) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = newText,
+                        onValueChange = { newText = it },
+                        placeholder = { Text("New task") },
+                        modifier = Modifier.weight(1f)
+                    )
+                    Button(onClick = {
+                        if (newText.isNotBlank()) {
+                            onAdd(newText.trim())
+                            newText = ""
                         }
-
-                        // 2) поле заметки
-                        OutlinedTextField(
-                            value = noteText,
-                            onValueChange = {
-                                noteText = it
-                                onNoteChange(task, it)
-                            },
-                            placeholder = { Text("Note") },
-                            modifier = Modifier
-                                .weight(1f)
-                                .defaultMinSize(TextFieldDefaults.MinHeight),
-                            maxLines = Int.MAX_VALUE
-                        )
-
-                        // 3) кнопки
-                        IconButton(onClick = { isEditing = true }) {
-                            Icon(Icons.Default.Edit, "Edit")
-                        }
-                        IconButton(onClick = { onDelete(task) }) {
-                            Icon(Icons.Default.Delete, "Delete")
-                        }
+                    }) {
+                        Text("Add")
                     }
                 }
+                Spacer(Modifier.height(8.dp))
+                Button(onClick = onNext, Modifier.fillMaxWidth()) {
+                    Text("Review")
+                }
             }
-
-            Spacer(Modifier.height(16.dp))
-
-            OutlinedTextField(
-                value = newText,
-                onValueChange = { newText = it },
-                placeholder = { Text("New task") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Button(
-                onClick = {
-                    if (newText.isNotBlank()) {
-                        onAdd(newText.trim())
-                        newText = ""
-                    }
-                },
-                Modifier
-                    .align(Alignment.End)
-                    .padding(top = 8.dp)
-            ) {
-                Text("Add")
+        }
+    ) { padding ->
+        CollapsibleList(
+            items = list,
+            threshold = 4,
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize(),
+            collapseLabel = "Показать все задачи"
+        ) { task ->
+            Column {
+                TaskItem(
+                    task         = task,
+                    onNoteChange = onNoteChange,
+                    onEdit       = onEdit,
+                    onDelete     = onDelete
+                )
+                Divider(Modifier.padding(vertical = 4.dp))
             }
         }
     }
 }
+
+
 
 

@@ -13,10 +13,15 @@ import com.example.dailysteps.domain.usecase.steps.GetStepEntryUseCase
 import com.example.dailysteps.domain.usecase.steps.UpdateStepEntryUseCase
 import com.example.dailysteps.domain.usecase.tasks.AddTaskUseCase
 import com.example.dailysteps.domain.usecase.tasks.DeleteTaskUseCase
+import com.example.dailysteps.domain.usecase.tasks.GetCompletionRatesUseCase
+import com.example.dailysteps.domain.usecase.tasks.GetHistoryDatesUseCase
 import com.example.dailysteps.domain.usecase.tasks.GetTasksUseCase
 import com.example.dailysteps.domain.usecase.tasks.ToggleDoneUseCase
 import com.example.dailysteps.domain.usecase.tasks.UpdateTaskUseCase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -45,14 +50,22 @@ object ServiceLocator {
     fun provideGetDayNoteUseCase()  = GetDayNoteUseCase(provideNoteRepo())
     fun provideSaveDayNoteUseCase() = SaveDayNoteUseCase(provideNoteRepo())
 
-    // === Use-cases: Steps ===
-    fun provideGetStepEntryUseCase()    = GetStepEntryUseCase(provideStepRepo())
-    fun provideUpdateStepEntryUseCase() = UpdateStepEntryUseCase(provideStepRepo())
+    // ========== History use-cases ==========
+    fun provideGetHistoryDatesUseCase() =
+        GetHistoryDatesUseCase(provideTaskRepository())
 
-    // === Use-cases: Stats ===
-    fun provideGetStreakUseCase()        = GetStreakUseCase(provideTaskRepository())
-    fun provideGetTaskStreaksUseCase()  = GetTaskStreaksUseCase(provideDefaultRepo(), provideTaskRepository())
+    fun provideGetCompletionRatesUseCase() =
+        GetCompletionRatesUseCase(provideTaskRepository())
 
+    // ========== Statistics use-cases ==========
+    // Для сегодняшнего одного дня мы тоже можем взять те же rates,
+    // но удобно обернуть его в специальный use-case:
+    fun provideGetTodayCompletionUseCase(): GetCompletionRatesUseCase =
+        GetCompletionRatesUseCase(provideTaskRepository())
+
+    fun provideGetStreakUseCase() = GetStreakUseCase(provideTaskRepository())
+    fun provideGetTaskStreaksUseCase() =
+        GetTaskStreaksUseCase(provideDefaultRepo(), provideTaskRepository())
     // === Инициализация нового дня ===
     suspend fun initNewDay(date: String) {
         val defaults = provideDefaultRepo().getAll().first()
@@ -63,4 +76,39 @@ object ServiceLocator {
         val goal = preferences.stepGoal.first()
         provideStepRepo().insert(StepEntry(date = date, goal = goal))
     }
+
+    /** Для тестов: переключиться на предыдущий день */
+    suspend fun debugPreviousDay() {
+        val prefs = preferences
+        val isoFmt = DateTimeFormatter.ISO_DATE
+        val current = prefs.lastDate.first().takeIf { it.isNotBlank() }
+            ?: LocalDate.now().format(isoFmt)
+        val prev = LocalDate.parse(current, isoFmt).minusDays(1).format(isoFmt)
+        prefs.setLastDate(prev)
+    }
+
+    suspend fun debugNextDay() {
+        val prefs = preferences
+        val isoFmt = DateTimeFormatter.ISO_DATE
+        val current = prefs.lastDate.first().takeIf { it.isNotBlank() }
+            ?: LocalDate.now().format(isoFmt)
+        val next = LocalDate.parse(current, isoFmt).plusDays(1).format(isoFmt)
+        prefs.setLastDate(next)
+    }
+
+    /** Полный сброс и заново создаём «сегодня» */
+    suspend fun debugReset() {
+        val todayIso = LocalDate.now().format(DateTimeFormatter.ISO_DATE)
+
+        // Чистим БД в IO
+        withContext(Dispatchers.IO) {
+            db.clearAllTables()
+        }
+        // Сбрасываем дату и инициализируем день
+        preferences.setLastDate(todayIso)
+        initNewDay(todayIso)
+    }
+
+
+
 }

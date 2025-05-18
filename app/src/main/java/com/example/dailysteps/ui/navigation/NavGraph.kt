@@ -5,10 +5,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.dailysteps.data.ServiceLocator
 import com.example.dailysteps.domain.usecase.stats.GetStreakUseCase
 import com.example.dailysteps.domain.usecase.steps.GetStepEntryUseCase
@@ -19,9 +22,12 @@ import com.example.dailysteps.domain.usecase.tasks.ToggleDoneUseCase
 import com.example.dailysteps.domain.usecase.daynote.GetDayNoteUseCase
 import com.example.dailysteps.domain.usecase.daynote.SaveDayNoteUseCase
 import com.example.dailysteps.domain.usecase.stats.GetTaskStreaksUseCase
+import com.example.dailysteps.domain.usecase.tasks.GetCompletionRatesUseCase
+import com.example.dailysteps.domain.usecase.tasks.GetHistoryDatesUseCase
 import com.example.dailysteps.domain.usecase.tasks.UpdateTaskUseCase
 import com.example.dailysteps.ui.screens.*
 import com.example.dailysteps.ui.viewmodel.*
+import com.example.dailysteps.work.DailyRolloverWorker
 import kotlinx.coroutines.launch
 
 @Composable
@@ -34,6 +40,8 @@ fun DailyStepsNavGraph() {
     ) {
         // Главное меню
         composable(Routes.MENU) {
+            val scope = rememberCoroutineScope()
+            val context = LocalContext.current
             val vm: MainMenuViewModel = viewModel(
                 factory = SimpleFactory {
                     MainMenuViewModel(
@@ -46,8 +54,16 @@ fun DailyStepsNavGraph() {
             MainMenuScreen(
                 streak       = vm.streak,
                 stepState    = vm.stepState,
-                onUpdateSteps= vm::onStepCountUpdated,
-                onNavigate   = { route -> navController.navigate(route) }
+                onNavigate   = { route -> navController.navigate(route) },
+                onDebugPrevDay = { scope.launch { ServiceLocator.debugPreviousDay() } },
+                onDebugNextDay  = { scope.launch { ServiceLocator.debugNextDay() } },
+                onDebugReset   = { scope.launch { ServiceLocator.debugReset() } },
+                onRunRolloverNow = {
+                    // через WorkManager запустить worker сразу
+                    val request = OneTimeWorkRequestBuilder<DailyRolloverWorker>().build()
+                    WorkManager.getInstance(context)
+                        .enqueue(request)
+                }
             )
         }
 
@@ -55,6 +71,7 @@ fun DailyStepsNavGraph() {
         composable(Routes.PLAN) {
             val vm: PlanViewModel = viewModel(factory = SimpleFactory {
                 PlanViewModel(
+                    ServiceLocator.preferences,
                     ServiceLocator.provideGetTasksUseCase(),
                     ServiceLocator.provideAddTaskUseCase(),
                     ServiceLocator.provideUpdateTaskUseCase(),
@@ -77,6 +94,7 @@ fun DailyStepsNavGraph() {
         composable(Routes.REVIEW) {
             val vm: ReviewViewModel = viewModel(factory = SimpleFactory {
                 ReviewViewModel(
+                    ServiceLocator.preferences,
                     ServiceLocator.provideGetTasksUseCase(),
                     ServiceLocator.provideToggleDoneUseCase(),
                     ServiceLocator.provideGetDayNoteUseCase(),
@@ -103,31 +121,41 @@ fun DailyStepsNavGraph() {
 
         // История
         composable(Routes.HISTORY) {
+            val vm: HistoryViewModel = viewModel(factory = SimpleFactory {
+                HistoryViewModel(
+                    ServiceLocator.preferences,
+                    ServiceLocator.provideGetHistoryDatesUseCase(),
+                    ServiceLocator.provideGetCompletionRatesUseCase()
+                )
+            })
             HistoryScreen(
-                onDaySelected = { /* ... */ },
-                onBack        = { navController.popBackStack() }
+                historyRates = vm.historyRates,
+                onDaySelected = { date ->
+                    // пока просто логируем или ничего не делаем,
+                    // позже сюда можно прокинуть vm.selectDate(date)
+                    println("Selected history date: $date")
+                },
+                onBack       = { navController.popBackStack() },
+                onSettings   = { navController.navigate(Routes.SETTINGS) }
             )
         }
 
         // Статистика
         composable(Routes.STATS) {
-            val vm: StatsViewModel = viewModel(
-                factory = SimpleFactory {
-                    StatsViewModel(
-                        GetTasksUseCase(ServiceLocator.provideTaskRepository()),
-                        GetStreakUseCase(ServiceLocator.provideTaskRepository()),
-                        GetTaskStreaksUseCase(
-                            ServiceLocator.provideDefaultRepo(),
-                            ServiceLocator.provideTaskRepository()
-                        )
-                    )
-                }
-            )
+            val vm: StatsViewModel = viewModel(factory = SimpleFactory {
+                StatsViewModel(
+                    ServiceLocator.preferences,
+                    ServiceLocator.provideGetTodayCompletionUseCase(),
+                    ServiceLocator.provideGetStreakUseCase(),
+                    ServiceLocator.provideGetTaskStreaksUseCase()
+                )
+            })
             StatsScreen(
                 percentDone = vm.percentDone,
-                streak      = vm.streak,
+                streak = vm.streak,
                 taskStreaks = vm.taskStreaks,
-                onBack      = { navController.popBackStack() }
+                onBack      = { navController.popBackStack() },
+                onSettings  = { navController.navigate(Routes.SETTINGS) }
             )
         }
 
