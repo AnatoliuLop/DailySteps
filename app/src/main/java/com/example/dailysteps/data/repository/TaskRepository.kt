@@ -14,4 +14,6 @@ interface TaskRepository {
     fun getByDefaultTaskId(defaultTaskId: Int): Flow<List<DailyTask>>
     fun getAllDates(): Flow<List<String>>
     fun getCompletionRatesInPeriod(start: String, end: String): Flow<List<DateRateEntity>>
+    fun existsOnDate(dateIso: String, description: String): Flow<Boolean>
+    fun getCompletedInRange(fromIso: String, toIso: String): Flow<List<DailyTask>>
 }

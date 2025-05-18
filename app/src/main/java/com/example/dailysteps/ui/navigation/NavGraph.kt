@@ -38,31 +38,26 @@ fun DailyStepsNavGraph() {
         navController  = navController,
         startDestination = Routes.MENU
     ) {
-        // Главное меню
         composable(Routes.MENU) {
             val scope = rememberCoroutineScope()
             val context = LocalContext.current
             val vm: MainMenuViewModel = viewModel(
                 factory = SimpleFactory {
                     MainMenuViewModel(
-                        GetStreakUseCase(ServiceLocator.provideTaskRepository()),
-                        GetStepEntryUseCase(ServiceLocator.provideStepRepo()),
-                        UpdateStepEntryUseCase(ServiceLocator.provideStepRepo())
+                        GetStreakUseCase(ServiceLocator.provideTaskRepository())
                     )
                 }
             )
             MainMenuScreen(
-                streak       = vm.streak,
-                stepState    = vm.stepState,
-                onNavigate   = { route -> navController.navigate(route) },
+                streak         = vm.streak,
+                onNavigate     = { route -> navController.navigate(route) },
+                onSettings     = { navController.navigate(Routes.SETTINGS) },
                 onDebugPrevDay = { scope.launch { ServiceLocator.debugPreviousDay() } },
-                onDebugNextDay  = { scope.launch { ServiceLocator.debugNextDay() } },
+                onDebugNextDay = { scope.launch { ServiceLocator.debugNextDay() } },
                 onDebugReset   = { scope.launch { ServiceLocator.debugReset() } },
                 onRunRolloverNow = {
-                    // через WorkManager запустить worker сразу
                     val request = OneTimeWorkRequestBuilder<DailyRolloverWorker>().build()
-                    WorkManager.getInstance(context)
-                        .enqueue(request)
+                    WorkManager.getInstance(context).enqueue(request)
                 }
             )
         }
@@ -80,6 +75,7 @@ fun DailyStepsNavGraph() {
             })
             DailyPlanScreen(
                 tasks        = vm.tasks,
+                error        = vm.error,
                 onAdd        = vm::add,
                 onNoteChange = vm::changeNote,
                 onEdit       = vm::editDescription,
@@ -151,13 +147,15 @@ fun DailyStepsNavGraph() {
                     ServiceLocator.preferences,
                     ServiceLocator.provideGetTodayCompletionUseCase(),
                     ServiceLocator.provideGetStreakUseCase(),
-                    ServiceLocator.provideGetTaskStreaksUseCase()
+                    ServiceLocator.provideGetTaskStreaksUseCase(),
+                    ServiceLocator.provideGetWeeklyCompletionUseCase()
                 )
             })
             StatsScreen(
                 percentDone = vm.percentDone,
                 streak = vm.streak,
                 taskStreaks = vm.taskStreaks,
+                weeklyStats = vm.weeklyStats,
                 onBack      = { navController.popBackStack() },
                 onSettings  = { navController.navigate(Routes.SETTINGS) }
             )

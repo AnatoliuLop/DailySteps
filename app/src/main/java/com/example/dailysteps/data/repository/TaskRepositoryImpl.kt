@@ -40,4 +40,10 @@ class TaskRepositoryImpl(
         end: String
     ): Flow<List<DateRateEntity>> =
         dao.getCompletionRatesInPeriod(start, end)
+
+    override fun existsOnDate(dateIso: String, description: String) =
+        dao.existsTaskOnDate(dateIso, description)
+
+    override fun getCompletedInRange(fromIso: String, toIso: String): Flow<List<DailyTask>> =
+        dao.getCompletedInRange(fromIso, toIso)
 }

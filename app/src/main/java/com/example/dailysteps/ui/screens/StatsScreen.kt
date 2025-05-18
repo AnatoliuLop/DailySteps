@@ -5,20 +5,24 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.dailysteps.domain.usecase.stats.TaskWeeklyCount
 import com.example.dailysteps.ui.viewmodel.TaskStreak
 import kotlinx.coroutines.flow.Flow
 import com.example.dailysteps.ui.components.StandardTopBar
-
+import androidx.compose.ui.text.style.TextAlign
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatsScreen(
+    weeklyStats: Flow<List<TaskWeeklyCount>>,
     percentDone: Flow<Float>,
     streak: Flow<Int>,
     taskStreaks: Flow<List<TaskStreak>>,
@@ -28,6 +32,7 @@ fun StatsScreen(
     val pct by percentDone.collectAsState(initial = 0f)
     val total by streak.collectAsState(initial = 0)
     val streakList by taskStreaks.collectAsState(initial = emptyList())
+    val weekly by weeklyStats.collectAsState(initial = emptyList())
 
     // 1) Выбор цвета дуги
     val arcColor = when {
@@ -77,21 +82,33 @@ fun StatsScreen(
 
             Divider()
 
-            // Task streaks
-            Text("Стрики задач (дней подряд)", fontSize = 20.sp)
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(streakList) { ts ->
-                    Row(
-                        Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(ts.name, fontSize = 16.sp)
-                        Text("${ts.days} дн.", fontSize = 16.sp)
-                    }
+            // --- Weekly completion ---
+            Text("Выполнено за последнюю неделю", fontSize = 20.sp)
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                weekly.forEach { w ->
+                    Text(w.description, fontSize = 16.sp, modifier = Modifier.padding(horizontal = 4.dp))
+                    // полоска прогресса
+                    LinearProgressIndicator(
+                        progress = (w.daysDone / 7f).coerceIn(0f, 1f),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(8.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                    )
+                    // подпись справа
+                    Text(
+                        "${w.daysDone}/7",
+                        fontSize = 14.sp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 4.dp),
+                        textAlign = TextAlign.End
+                    )
                 }
             }
         }
     }
 }
-

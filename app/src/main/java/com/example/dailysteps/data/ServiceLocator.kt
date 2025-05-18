@@ -9,6 +9,7 @@ import com.example.dailysteps.domain.usecase.daynote.GetDayNoteUseCase
 import com.example.dailysteps.domain.usecase.daynote.SaveDayNoteUseCase
 import com.example.dailysteps.domain.usecase.stats.GetStreakUseCase
 import com.example.dailysteps.domain.usecase.stats.GetTaskStreaksUseCase
+import com.example.dailysteps.domain.usecase.stats.GetWeeklyCompletionUseCase
 import com.example.dailysteps.domain.usecase.steps.GetStepEntryUseCase
 import com.example.dailysteps.domain.usecase.steps.UpdateStepEntryUseCase
 import com.example.dailysteps.domain.usecase.tasks.AddTaskUseCase
@@ -63,6 +64,9 @@ object ServiceLocator {
     // ========== Statistics use-cases ==========
     // Для сегодняшнего одного дня мы тоже можем взять те же rates,
     // но удобно обернуть его в специальный use-case:
+    fun provideGetWeeklyCompletionUseCase() =
+        GetWeeklyCompletionUseCase(provideTaskRepository())
+
     fun provideGetTodayCompletionUseCase(): GetCompletionRatesUseCase =
         GetCompletionRatesUseCase(provideTaskRepository())
 
@@ -79,6 +83,8 @@ object ServiceLocator {
         val goal = preferences.stepGoal.first()
         provideStepRepo().insert(StepEntry(date = date, goal = goal))
     }
+
+
 
     /** Для тестов: переключиться на предыдущий день */
     suspend fun debugPreviousDay() {

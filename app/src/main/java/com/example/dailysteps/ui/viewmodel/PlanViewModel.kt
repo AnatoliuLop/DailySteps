@@ -19,6 +19,10 @@ class PlanViewModel(
 ) : ViewModel() {
 
     private val fmt = DateTimeFormatter.ISO_DATE
+    private val _error = MutableSharedFlow<String>()
+    val error: SharedFlow<String> = _error
+
+
 
     // Сначала читаем строку из prefs (или today)
     private val dateIsoFlow: Flow<String> = prefs.lastDate
@@ -32,13 +36,12 @@ class PlanViewModel(
 
     fun add(description: String, category: String = "general") {
         viewModelScope.launch {
-            val dateIso = dateIsoFlow.first()   // <- это уже строка
-            addTask(
-                description = description,
-                category = category,
-                dateIso = dateIso,
-                defaultTaskId = 0              // ручная задача
-            )
+            try {
+                val dateIso = dateIsoFlow.first()
+                addTask(description, category, dateIso, defaultTaskId = 0)
+            } catch (e: DuplicateTaskException) {
+                _error.emit("Задача с таким описанием уже есть на этот день")
+            }
         }
     }
 

@@ -21,6 +21,7 @@ import com.example.dailysteps.data.model.DailyTask
 import com.example.dailysteps.ui.components.StandardTopBar
 import com.example.dailysteps.ui.screens.components.CollapsibleList
 import com.example.dailysteps.ui.screens.components.TaskItem
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 
 @SuppressLint("Range")
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.StateFlow
 @Composable
 fun DailyPlanScreen(
     tasks: StateFlow<List<DailyTask>>,
+    error: SharedFlow<String>,               // ← новый
     onAdd: (String) -> Unit,
     onNoteChange: (DailyTask, String) -> Unit,
     onEdit: (DailyTask, String) -> Unit,
@@ -39,7 +41,18 @@ fun DailyPlanScreen(
     val list by tasks.collectAsState()
     var newText by remember { mutableStateOf("") }
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // 2) ловим ошибки и показываем
+    LaunchedEffect(error) {
+        error.collect { msg ->
+            snackbarHostState.showSnackbar(msg)
+        }
+    }
+
+
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             StandardTopBar("Daily Plan", onBack, onSettings)
         },

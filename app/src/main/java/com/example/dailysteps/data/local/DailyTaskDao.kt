@@ -38,4 +38,17 @@ interface DailyTaskDao {
 """)
     fun getCompletionRatesInPeriod(start: String, end: String): Flow<List<DateRateEntity>>
 
+    @Query("""
+  SELECT EXISTS(
+    SELECT 1 FROM DailyTask 
+     WHERE date = :date AND description = :desc
+  )
+""")
+    fun existsTaskOnDate(date: String, desc: String): Flow<Boolean>
+
+    @Query("""
+  SELECT * FROM DailyTask
+  WHERE date BETWEEN :fromIso AND :toIso AND done = 1
+""")
+    fun getCompletedInRange(fromIso: String, toIso: String): Flow<List<DailyTask>>
 }

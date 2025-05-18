@@ -3,6 +3,7 @@ package com.example.dailysteps.domain.usecase.tasks
 
 import com.example.dailysteps.data.model.DailyTask
 import com.example.dailysteps.data.repository.TaskRepository
+import kotlinx.coroutines.flow.first
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -21,6 +22,8 @@ class AddTaskUseCase(private val repo: TaskRepository) {
         dateIso: String = LocalDate.now().format(fmt),
         defaultTaskId: Int = 0
     ) {
+        val exists = repo.existsOnDate(dateIso, description).first()
+        if (exists) throw DuplicateTaskException()
         val task = DailyTask(
             date = dateIso,
             defaultTaskId = defaultTaskId,

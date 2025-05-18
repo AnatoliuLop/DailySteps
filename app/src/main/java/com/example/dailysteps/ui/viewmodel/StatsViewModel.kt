@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.dailysteps.data.preferences.PreferencesManager
 import com.example.dailysteps.domain.usecase.stats.GetStreakUseCase
 import com.example.dailysteps.domain.usecase.stats.GetTaskStreaksUseCase
+import com.example.dailysteps.domain.usecase.stats.GetWeeklyCompletionUseCase
+import com.example.dailysteps.domain.usecase.stats.TaskWeeklyCount
 import com.example.dailysteps.domain.usecase.tasks.GetCompletionRatesUseCase
 import com.example.dailysteps.domain.usecase.tasks.GetTasksUseCase
 import kotlinx.coroutines.flow.*
@@ -15,7 +17,8 @@ class StatsViewModel(
     prefs: PreferencesManager,
     private val getRates: GetCompletionRatesUseCase,
     private val getStreak: GetStreakUseCase,
-    private val getTaskStreaks: GetTaskStreaksUseCase
+    private val getTaskStreaks: GetTaskStreaksUseCase,
+    private val getWeekly: GetWeeklyCompletionUseCase
 ) : ViewModel() {
     private val fmt = DateTimeFormatter.ISO_DATE
 
@@ -41,4 +44,17 @@ class StatsViewModel(
     val taskStreaks: StateFlow<List<TaskStreak>> = getTaskStreaks()
         .map { domainList -> domainList.map { TaskStreak(it.name, it.days) } }
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    /** 5) Недельная статистика:
+     * считаем from = dateIso.minusWeeks(1), до = dateIso
+     */
+    val weeklyStats: StateFlow<List<TaskWeeklyCount>> = dateIsoFlow
+        .flatMapLatest { iso ->
+            val fromIso = LocalDate.parse(iso, fmt)
+                .minusWeeks(1)
+                .format(fmt)
+            getWeekly(fromIso, iso)
+        }
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
 }
