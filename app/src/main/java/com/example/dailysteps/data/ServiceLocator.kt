@@ -47,8 +47,11 @@ object ServiceLocator {
     fun provideDeleteTaskUseCase()  = DeleteTaskUseCase(provideTaskRepository())
 
     // === Use-cases: DayNote ===
-    fun provideGetDayNoteUseCase()  = GetDayNoteUseCase(provideNoteRepo())
-    fun provideSaveDayNoteUseCase() = SaveDayNoteUseCase(provideNoteRepo())
+    fun provideGetDayNoteUseCase(): GetDayNoteUseCase =
+        GetDayNoteUseCase(provideNoteRepo(), preferences)
+
+    fun provideSaveDayNoteUseCase(): SaveDayNoteUseCase =
+        SaveDayNoteUseCase(provideNoteRepo(), preferences)
 
     // ========== History use-cases ==========
     fun provideGetHistoryDatesUseCase() =

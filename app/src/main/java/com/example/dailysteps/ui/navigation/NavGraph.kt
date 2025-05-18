@@ -125,18 +125,22 @@ fun DailyStepsNavGraph() {
                 HistoryViewModel(
                     ServiceLocator.preferences,
                     ServiceLocator.provideGetHistoryDatesUseCase(),
-                    ServiceLocator.provideGetCompletionRatesUseCase()
+                    ServiceLocator.provideGetCompletionRatesUseCase(),
+                    ServiceLocator.provideGetTasksUseCase(),       // ← новый
+                    ServiceLocator.provideGetDayNoteUseCase()     // ← новый
                 )
             })
             HistoryScreen(
-                historyRates = vm.historyRates,
-                onDaySelected = { date ->
-                    // пока просто логируем или ничего не делаем,
-                    // позже сюда можно прокинуть vm.selectDate(date)
-                    println("Selected history date: $date")
-                },
+                calendarDates    = vm.calendarDates,
+                historyRates     = vm.historyRates,
+                tasksForDate     = vm.tasksForDate,
+                dayNoteForDate   = vm.dayNoteForDate,
+                selectedDate     = vm.selectedDate,
+                onDaySelected    = vm::selectDate,
+                onClearSelection = vm::clearSelection,
                 onBack       = { navController.popBackStack() },
-                onSettings   = { navController.navigate(Routes.SETTINGS) }
+                onSettings   = { navController.navigate(Routes.SETTINGS) },
+                prefs            = ServiceLocator.preferences
             )
         }
 
@@ -159,7 +163,7 @@ fun DailyStepsNavGraph() {
             )
         }
 
-        //  Экран настроек
+      //  Экран настроек
         composable(Routes.SETTINGS) {
             val prefs = ServiceLocator.preferences
             // Собираем из Flow текущее состояние
