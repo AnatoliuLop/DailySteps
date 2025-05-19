@@ -1,7 +1,9 @@
 package com.example.dailysteps.ui.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dailysteps.R
 import com.example.dailysteps.data.preferences.PreferencesManager
 import com.example.dailysteps.data.model.DailyTask
 import com.example.dailysteps.domain.usecase.tasks.*
@@ -12,6 +14,7 @@ import java.time.format.DateTimeFormatter
 
 class PlanViewModel(
     prefs: PreferencesManager,
+    private val context: Context,               // ← добавили
     private val getTasks: GetTasksUseCase,
     private val addTask: AddTaskUseCase,
     private val updateTask: UpdateTaskUseCase,
@@ -40,7 +43,8 @@ class PlanViewModel(
                 val dateIso = dateIsoFlow.first()
                 addTask(description, category, dateIso, defaultTaskId = 0)
             } catch (e: DuplicateTaskException) {
-                _error.emit("Задача с таким описанием уже есть на этот день")
+                val msg = context.getString(R.string.error_task_exists)
+                _error.emit(msg)
             }
         }
     }

@@ -1,8 +1,11 @@
 // ReviewViewModel.kt
 package com.example.dailysteps.ui.viewmodel
 
+import android.content.Context
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dailysteps.R
 import com.example.dailysteps.data.preferences.PreferencesManager
 import com.example.dailysteps.data.model.DailyTask
 import com.example.dailysteps.domain.usecase.daynote.*
@@ -13,6 +16,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class ReviewViewModel(
+    private val context: Context,
     prefs: PreferencesManager,
     private val getTasksUseCase: GetTasksUseCase,
     private val toggleDoneUseCase: ToggleDoneUseCase,
@@ -48,25 +52,30 @@ class ReviewViewModel(
 
     // 2) completeDay считает прогресс и выставляет сообщение
     fun completeDay() = viewModelScope.launch {
-        val date = dateFlow.first()
+        val date      = dateFlow.first()
         val todayTasks = getTasksUseCase(date).first()
-        val total = todayTasks.size
+        val total     = todayTasks.size
         val doneCount = todayTasks.count { it.done }
 
-        val msg = when {
-            doneCount == 1 -> "Хорошая работа, начало положено."
-            total > 0 && doneCount * 2 == total -> "Отлично, половина запланированных заданий уже позади."
+        // выбираем ID строки
+        val msgRes = when {
+            doneCount == 1 ->
+                R.string.review_msg_first_step
+            total > 0 && doneCount * 2 == total ->
+                R.string.review_msg_halfway
             total > 1 && doneCount == total - 1 ->
-                "Осталось только 1 задание на сегодня, нужно успеть доделать и наслаждаться отдыхом."
-            doneCount == total -> "Супер! Этот день был продуктивен, ты сделал всё, что запланировал. Запишем это в историю."
-            doneCount in 2 until total -> "Супер, мы всё ближе к цели!"
-            else -> "Постарайся выполнить хотя бы одно задание."
+                R.string.review_msg_one_left
+            doneCount == total ->
+                R.string.review_msg_all_done
+            doneCount in 2 until total ->
+                R.string.review_msg_closer
+            else ->
+                R.string.review_msg_try_one
         }
 
-        _completionMessage.value = msg
-        // Здесь же можно засейвить flag в preferences или историю
+        // грузим сам текст из ресурсов
+        _completionMessage.value = context.getString(msgRes)
     }
-
     // 3) сброс сообщения (при закрытии диалога)
     fun clearCompletionMessage() = viewModelScope.launch {
         _completionMessage.value = null

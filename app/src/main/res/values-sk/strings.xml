@@ -1,18 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- App -->
     <string name="app_name">DailySteps</string>
-    <string name="screen_plan_button">Go to Review Sk</string>
-    <string name="screen_review_button">Go to History Sk</string>
-    <string name="screen_history_button">Go to Stats Sk</string>
-    <string name="screen_stats_button">Restart Workflow Sk</string>
-    <string name="switch_to_slovak">Switch to Slovak Sk</string>
-    <string name="switch_to_english">Switch to English Sk</string>
-    <string name="settings">Settings Sk</string>
-    <string name="language">Language</string>
-    <string name="english">English</string>
-    <string name="slovak">Slovak</string>
-    <string name="theme">Theme</string>
-    <string name="light">Light</string>
-    <string name="dark">Dark</string>
+
+    <!-- Main Menu -->
+    <plurals name="streak_days">
+        <!-- ровно 1 -->
+        <item quantity="one">Séria: %d deň po sebe</item>
+        <!-- ровно 2 -->
+        <item quantity="two">Séria: %d dni po sebe</item>
+        <!-- 3 и 4 -->
+        <item quantity="few">Séria: %d dni po sebe</item>
+        <!-- для «многих» (например, 10, 10.0 и т.д.) -->
+        <item quantity="many">Séria: %d dní po sebe</item>
+        <!-- всё остальное -->
+        <item quantity="other">Séria: %d dní po sebe</item>
+    </plurals>
+    <string name="habit_start_message">Drž sa — dnes je tvoj prvý krok k vytvoreniu návyku!</string>
+    <string name="daily_plan">Plán dňa</string>
+    <string name="review_day">Prehľad dňa</string>
+    <string name="history">História</string>
+    <string name="statistics">Štatistiky</string>
+
+    <!-- Developer helper dropdown -->
+    <string name="help_dev">Pomôcka Pre Developera</string>
+    <string name="dev_prev_day">⏮️ Predchádzajúci deň</string>
+    <string name="dev_next_day">⏭️ Nasledujúci deň</string>
+    <string name="dev_run_rollover">🚀 Spusti Rollover teraz</string>
+    <string name="dev_reset">🔄 Obnoviť</string>
+    <string name="current_date">Aktuálny dátum: %1$s</string>
+
+    <!-- Daily Plan Screen -->
+    <string name="new_task">Nová úloha</string>
+    <string name="add">Pridať</string>
+    <string name="review">Prehľad</string>
+    <string name="show_all_tasks">Zobraziť všetky úlohy</string>
+    <string name="note_placeholder">Poznámka</string>
+    <string name="action_save">Uložiť</string>
+    <string name="action_edit">Upraviť</string>
+    <string name="action_delete">Vymazať</string>
+
+    <!-- Daily Review Screen -->
+    <string name="daily_note">Denná poznámka</string>
+    <string name="done">Hotovo</string>
+    <string name="daily_summary">Zhrnutie dňa</string>
+
+    <!-- History Screen -->
+    <string name="in_process">Prebieha</string>
+    <string name="details_for">Detaily pre %1$s</string>
+    <string name="note_label">Poznámka:</string>
+    <string name="no_note">&lt;žiadna poznámka&gt;</string>
+    <string name="tasks_label">Úlohy:</string>
+    <string name="task_done">✅</string>
+    <string name="task_not_done">❌</string>
     <string name="ok">OK</string>
+
+    <!-- Statistics Screen -->
+    <string name="todays_completion_rate">Dnešná miera dokončenia</string>
+    <string name="msg_zero">Je čas konať! Začni s malými krokmi.</string>
+    <string name="msg_low">Veríme ti—snaž sa viac.</string>
+    <string name="msg_mid">Skvelé, ale vždy je možné sa zlepšiť.</string>
+    <string name="msg_high">Úžasné! Teraz si môžeš stanoviť väčšie ciele.</string>
+    <string name="completed_last_week">Dokončené za posledný týždeň</string>
+
+    <!-- Settings Dialog -->
+    <string name="settings">Nastavenia</string>
+    <string name="language">Jazyk</string>
+    <string name="english">Angličtina</string>
+    <string name="slovak">Slovenčina</string>
+    <string name="theme">Téma</string>
+    <string name="light">Svetlá</string>
+    <string name="dark">Tmavá</string>
+    <string name="back">Späť</string>
+    <string name="error_task_exists">Na tento deň už existuje úloha s týmto popisom.</string>
+    <string name="notif_title">DailySteps</string>
+    <string name="notif_morning_msg">Je čas stanoviť si ciele dňa</string>
+    <string name="notif_midday_msg">Nezabudnite: na dnes sú úlohy</string>
+    <string name="notif_evening_msg">Nezabudnite si poznačiť, čo ste dnes robili</string>
+    <string name="notif_channel_description">Kanál pripomenutia DailySteps</string>
+
+    <string name="review_msg_first_step">Skvelá práca, urobil si prvý krok.</string>
+    <string name="review_msg_halfway">Výborne, si v polovici!</string>
+    <string name="review_msg_one_left">Zostal len jeden úloha — dokonči to!</string>
+    <string name="review_msg_all_done">Úžasné! Dnešné úlohy sú hotové.</string>
+    <string name="review_msg_closer">Fajn, si čoraz bližšie k cieľu!</string>
+    <string name="review_msg_try_one">Skús dokončiť aspoň jednu úlohu.</string>
 </resources>

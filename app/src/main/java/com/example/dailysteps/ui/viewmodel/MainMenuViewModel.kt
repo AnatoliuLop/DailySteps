@@ -3,8 +3,6 @@ package com.example.dailysteps.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dailysteps.domain.usecase.stats.GetStreakUseCase
-import com.example.dailysteps.domain.usecase.steps.GetStepEntryUseCase
-import com.example.dailysteps.domain.usecase.steps.UpdateStepEntryUseCase
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 

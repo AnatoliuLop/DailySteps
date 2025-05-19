@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.appcompat)
 
 
     testImplementation(libs.junit)
@@ -71,5 +72,5 @@ dependencies {
     // Icons
     implementation("androidx.compose.material:material-icons-extended:1.5.0")
     // … ваши другие implementation() …
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.2")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 }

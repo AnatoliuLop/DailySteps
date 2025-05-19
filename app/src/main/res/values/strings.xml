@@ -1,11 +1,60 @@
 <resources>
+    <!-- App -->
     <string name="app_name">DailySteps</string>
-    <string name="screen_plan_button">Go to Review</string>
-    <string name="screen_review_button">Go to History</string>
-    <string name="screen_history_button">Go to Stats</string>
-    <string name="screen_stats_button">Restart Workflow</string>
-    <string name="switch_to_slovak">Switch to Slovak</string>
-    <string name="switch_to_english">Switch to English</string>
+
+    <!-- Main Menu -->
+    <plurals name="streak_days">
+        <item quantity="one">Streak: %d day in a row</item>
+        <item quantity="other">Streak: %d days in a row</item>
+    </plurals>
+    <string name="habit_start_message">Keep it up — today is your first step toward building a habit!</string>
+    <string name="daily_plan">Daily Plan</string>
+    <string name="review_day">Review Day</string>
+    <string name="history">History</string>
+    <string name="statistics">Statistics</string>
+
+    <!-- Developer helper dropdown -->
+    <string name="help_dev">Developer Helper</string>
+    <string name="dev_prev_day">⏮️ Prev Day</string>
+    <string name="dev_next_day">⏭️ Next Day</string>
+    <string name="dev_run_rollover">🚀 Run Rollover Now</string>
+    <string name="dev_reset">🔄 Reset</string>
+    <string name="current_date">Current date: %1$s</string>
+
+    <!-- Daily Plan Screen -->
+    <string name="new_task">New task</string>
+    <string name="add">Add</string>
+    <string name="review">Review</string>
+    <string name="show_all_tasks">Show all tasks</string>
+    <string name="note_placeholder">Note</string>
+    <string name="action_save">Save</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_delete">Delete</string>
+
+    <!-- Daily Review Screen -->
+    <string name="daily_note">Daily note</string>
+    <string name="done">Done</string>
+    <string name="daily_summary">Daily summary</string>
+
+    <!-- History Screen -->
+    <string name="in_process">In process</string>
+    <string name="details_for">Details for %1$s</string>
+    <string name="note_label">Note:</string>
+    <string name="no_note">&lt;no note&gt;</string>
+    <string name="tasks_label">Tasks:</string>
+    <string name="task_done">✅</string>
+    <string name="task_not_done">❌</string>
+    <string name="ok">OK</string>
+
+    <!-- Statistics Screen -->
+    <string name="todays_completion_rate">Today\'s completion rate</string>
+    <string name="msg_zero">Time to act! Start small.</string>
+    <string name="msg_low">We believe in you—keep trying.</string>
+    <string name="msg_mid">Great, but you can always improve.</string>
+    <string name="msg_high">Awesome! Now you can set bigger goals.</string>
+    <string name="completed_last_week">Completed in the last week</string>
+
+    <!-- Settings Dialog -->
     <string name="settings">Settings</string>
     <string name="language">Language</string>
     <string name="english">English</string>
@@ -13,6 +62,18 @@
     <string name="theme">Theme</string>
     <string name="light">Light</string>
     <string name="dark">Dark</string>
-    <string name="ok">OK</string>
-    <string name="back">String Back\n</string>
+    <string name="back" />
+    <string name="error_task_exists" />
+    <string name="notif_title">DailySteps</string>
+    <string name="notif_morning_msg">Пора поставить цели на день</string>
+    <string name="notif_midday_msg">Не забывай: есть задачи на сегодня</string>
+    <string name="notif_evening_msg">Не забудь отметить, что сделал сегодня</string>
+    <string name="notif_channel_description">Канал напоминаний DailySteps</string>
+
+    <string name="review_msg_first_step">Good job, you’ve made the first step.</string>
+    <string name="review_msg_halfway">Great, you’re halfway there!</string>
+    <string name="review_msg_one_left">Only one task left — finish strong!</string>
+    <string name="review_msg_all_done">Awesome! You completed everything for today.</string>
+    <string name="review_msg_closer">Nice, you’re getting closer to your goal!</string>
+    <string name="review_msg_try_one">Try to complete at least one task.</string>
 </resources>

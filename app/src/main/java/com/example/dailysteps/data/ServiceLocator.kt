@@ -2,7 +2,6 @@ package com.example.dailysteps.data
 
 import com.example.dailysteps.data.local.AppDatabase
 import com.example.dailysteps.data.model.DailyTask
-import com.example.dailysteps.data.model.StepEntry
 import com.example.dailysteps.data.preferences.PreferencesManager
 import com.example.dailysteps.data.repository.*
 import com.example.dailysteps.domain.usecase.daynote.GetDayNoteUseCase
@@ -10,8 +9,6 @@ import com.example.dailysteps.domain.usecase.daynote.SaveDayNoteUseCase
 import com.example.dailysteps.domain.usecase.stats.GetStreakUseCase
 import com.example.dailysteps.domain.usecase.stats.GetTaskStreaksUseCase
 import com.example.dailysteps.domain.usecase.stats.GetWeeklyCompletionUseCase
-import com.example.dailysteps.domain.usecase.steps.GetStepEntryUseCase
-import com.example.dailysteps.domain.usecase.steps.UpdateStepEntryUseCase
 import com.example.dailysteps.domain.usecase.tasks.AddTaskUseCase
 import com.example.dailysteps.domain.usecase.tasks.DeleteTaskUseCase
 import com.example.dailysteps.domain.usecase.tasks.GetCompletionRatesUseCase
@@ -38,7 +35,7 @@ object ServiceLocator {
     fun provideTaskRepository() = TaskRepositoryImpl(db.dailyTaskDao())
     fun provideDefaultRepo() = DefaultTaskRepositoryImpl(db.defaultTaskDao())
     fun provideNoteRepo() = DailyDayNoteRepositoryImpl(db.dailyDayNoteDao())
-    fun provideStepRepo() = StepEntryRepositoryImpl(db.stepEntryDao())
+
 
     // === Use-cases: Tasks ===
     fun provideGetTasksUseCase()    = GetTasksUseCase(provideTaskRepository())
@@ -70,7 +67,7 @@ object ServiceLocator {
     fun provideGetTodayCompletionUseCase(): GetCompletionRatesUseCase =
         GetCompletionRatesUseCase(provideTaskRepository())
 
-    fun provideGetStreakUseCase() = GetStreakUseCase(provideTaskRepository())
+    fun provideGetStreakUseCase() = GetStreakUseCase(provideTaskRepository(), preferences)
     fun provideGetTaskStreaksUseCase() =
         GetTaskStreaksUseCase(provideDefaultRepo(), provideTaskRepository())
     // === Инициализация нового дня ===
@@ -80,8 +77,7 @@ object ServiceLocator {
             DailyTask(date = date, defaultTaskId = dt.id, category = dt.category, description = dt.description)
         }
         provideTaskRepository().insertAll(daily)
-        val goal = preferences.stepGoal.first()
-        provideStepRepo().insert(StepEntry(date = date, goal = goal))
+
     }
 
 

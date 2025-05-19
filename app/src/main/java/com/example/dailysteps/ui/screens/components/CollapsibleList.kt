@@ -2,10 +2,13 @@ package com.example.dailysteps.ui.screens.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 
 /**
@@ -24,10 +27,12 @@ fun <T> CollapsibleList(
     items: List<T>,
     threshold: Int = 4,
     modifier: Modifier = Modifier,
-    collapseLabel: String = "Показать все",
+    collapseLabel: String = "",
+    // импорт: import androidx.compose.foundation.lazy.rememberLazyListState
+    listState: LazyListState = rememberLazyListState(),
     itemContent: @Composable (T) -> Unit
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by rememberSaveable  { mutableStateOf(false) }
     val visibleItems = if (!expanded && items.size > threshold) items.take(threshold) else items
 
     LazyColumn(modifier = modifier) {

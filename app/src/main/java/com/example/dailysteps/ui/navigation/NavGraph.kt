@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/dailysteps/ui/navigation/NavGraph.kt
 package com.example.dailysteps.ui.navigation
 
 import androidx.compose.runtime.Composable
@@ -14,17 +13,6 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.dailysteps.data.ServiceLocator
 import com.example.dailysteps.domain.usecase.stats.GetStreakUseCase
-import com.example.dailysteps.domain.usecase.steps.GetStepEntryUseCase
-import com.example.dailysteps.domain.usecase.steps.UpdateStepEntryUseCase
-import com.example.dailysteps.domain.usecase.tasks.GetTasksUseCase
-import com.example.dailysteps.domain.usecase.tasks.AddTaskUseCase
-import com.example.dailysteps.domain.usecase.tasks.ToggleDoneUseCase
-import com.example.dailysteps.domain.usecase.daynote.GetDayNoteUseCase
-import com.example.dailysteps.domain.usecase.daynote.SaveDayNoteUseCase
-import com.example.dailysteps.domain.usecase.stats.GetTaskStreaksUseCase
-import com.example.dailysteps.domain.usecase.tasks.GetCompletionRatesUseCase
-import com.example.dailysteps.domain.usecase.tasks.GetHistoryDatesUseCase
-import com.example.dailysteps.domain.usecase.tasks.UpdateTaskUseCase
 import com.example.dailysteps.ui.screens.*
 import com.example.dailysteps.ui.viewmodel.*
 import com.example.dailysteps.work.DailyRolloverWorker
@@ -44,7 +32,7 @@ fun DailyStepsNavGraph() {
             val vm: MainMenuViewModel = viewModel(
                 factory = SimpleFactory {
                     MainMenuViewModel(
-                        GetStreakUseCase(ServiceLocator.provideTaskRepository())
+                        GetStreakUseCase(ServiceLocator.provideTaskRepository(),ServiceLocator.preferences)
                     )
                 }
             )
@@ -64,9 +52,11 @@ fun DailyStepsNavGraph() {
 
         // План на день
         composable(Routes.PLAN) {
+            val context = LocalContext.current
             val vm: PlanViewModel = viewModel(factory = SimpleFactory {
                 PlanViewModel(
                     ServiceLocator.preferences,
+                    context,
                     ServiceLocator.provideGetTasksUseCase(),
                     ServiceLocator.provideAddTaskUseCase(),
                     ServiceLocator.provideUpdateTaskUseCase(),
@@ -88,8 +78,10 @@ fun DailyStepsNavGraph() {
 
         // Обзор дня
         composable(Routes.REVIEW) {
+            val context = LocalContext.current
             val vm: ReviewViewModel = viewModel(factory = SimpleFactory {
                 ReviewViewModel(
+                    context,
                     ServiceLocator.preferences,
                     ServiceLocator.provideGetTasksUseCase(),
                     ServiceLocator.provideToggleDoneUseCase(),
@@ -161,7 +153,7 @@ fun DailyStepsNavGraph() {
             )
         }
 
-      //  Экран настроек
+        //  Экран настроек
         composable(Routes.SETTINGS) {
             val prefs = ServiceLocator.preferences
             // Собираем из Flow текущее состояние

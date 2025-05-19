@@ -15,7 +15,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.dailysteps.R
 import com.example.dailysteps.data.model.DailyTask
 import com.example.dailysteps.data.model.DateRateEntity
 import com.example.dailysteps.data.preferences.PreferencesManager
@@ -53,7 +55,7 @@ fun HistoryScreen(
 
     Scaffold(
         topBar = {
-            StandardTopBar("History", onBack, onSettings)
+            StandardTopBar(stringResource(R.string.history), onBack, onSettings)
         }
     ) { padding ->
         Column(Modifier.padding(padding).padding(16.dp)) {
@@ -69,7 +71,7 @@ fun HistoryScreen(
                     ) {
                         Text(iso)
                         if (iso == currIso) {
-                            Text("In process")
+                            Text(stringResource(R.string.in_process))
                         } else {
                             Text("${(pct * 100).toInt()}%")
                         }
@@ -82,7 +84,7 @@ fun HistoryScreen(
         if (selIso != null) {
             AlertDialog(
                 onDismissRequest = onClearSelection,
-                title = { Text("Details for $selIso") },
+                title = { Text(stringResource(R.string.details_for, selIso!!)) },
                 text = {
                     Column(
                         Modifier
@@ -92,26 +94,29 @@ fun HistoryScreen(
                             .padding(8.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        Text("Note:")
-                        Text(note.ifBlank { "<no note>" })
+                        Text(stringResource(R.string.note_label))
+                        Text(note.ifBlank { stringResource(R.string.no_note) })
 
                         Divider()
 
-                        Text("Tasks:")
+                        Text(stringResource(R.string.tasks_label))
                         tasks.forEach { task ->
                             Row(
                                 Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(task.description)
-                                Text(if (task.done) "✅" else "❌")
+                                Text(if (task.done)
+                                        stringResource(R.string.task_done)
+                                    else
+                                        stringResource(R.string.task_not_done))
                             }
                         }
                     }
                 },
                 confirmButton = {
                     TextButton(onClick = onClearSelection) {
-                        Text("OK")
+                        Text(stringResource(R.string.ok))
                     }
                 }
             )

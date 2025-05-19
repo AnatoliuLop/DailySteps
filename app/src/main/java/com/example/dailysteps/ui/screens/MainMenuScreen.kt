@@ -1,13 +1,18 @@
 
 package com.example.dailysteps.ui.screens
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -59,79 +64,107 @@ fun MainMenuScreen(
                 title = { Text(stringResource(R.string.app_name)) },
                 actions = {
                     IconButton(onClick = { showSettings = true }) {
-                        Icon(Icons.Default.Settings, contentDescription = "Settings")
+                        Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.settings))
                     }
                 }
             )
         }
     ) { padding ->
+        val scroll = rememberScrollState()
+        // узнаём ориентацию экрана
+        val configuration = LocalConfiguration.current
+        val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
         Column(
             Modifier
                 .fillMaxSize()
+                .verticalScroll(scroll)
                 .padding(padding)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
+            // Стрик
             if (streakVal > 0) {
                 Text(
-                    text = "Стрик: $streakVal ${if (streakVal == 1) "день" else "дня"} подряд",
+                    text = pluralStringResource(R.plurals.streak_days, streakVal, streakVal),
                     fontSize = 20.sp
                 )
             } else {
                 Text(
-                    text = "Поднажми — сегодня твой первый шаг к привычке!",
+                    text = stringResource(R.string.habit_start_message),
                     fontSize = 18.sp,
                     color = Color.Gray
                 )
             }
 
-            Button(onClick = { onNavigate(Routes.PLAN) }, Modifier.fillMaxWidth()) {
-                Text("Daily Plan")
-            }
-            Button(onClick = { onNavigate(Routes.REVIEW) }, Modifier.fillMaxWidth()) {
-                Text("Review Day")
-            }
-            Button(onClick = { onNavigate(Routes.HISTORY) }, Modifier.fillMaxWidth()) {
-                Text("History")
-            }
-            Button(onClick = { onNavigate(Routes.STATS) }, Modifier.fillMaxWidth()) {
-                Text("Statistics")
+            if (isLandscape) {
+                // две строки по две кнопки
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Button(onClick = { onNavigate(Routes.PLAN) }, Modifier.weight(1f)) {
+                        Text(stringResource(R.string.daily_plan))
+                    }
+                    Button(onClick = { onNavigate(Routes.REVIEW) }, Modifier.weight(1f)) {
+                        Text(stringResource(R.string.review_day))
+                    }
+                }
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Button(onClick = { onNavigate(Routes.HISTORY) }, Modifier.weight(1f)) {
+                        Text(stringResource(R.string.history))
+                    }
+                    Button(onClick = { onNavigate(Routes.STATS) }, Modifier.weight(1f)) {
+                        Text(stringResource(R.string.statistics))
+                    }
+                }
+            } else {
+                // портрет: четыре кнопки в столбик
+                Button(onClick = { onNavigate(Routes.PLAN) }, Modifier.fillMaxWidth()) {
+                    Text(stringResource(R.string.daily_plan))
+                }
+                Button(onClick = { onNavigate(Routes.REVIEW) }, Modifier.fillMaxWidth()) {
+                    Text(stringResource(R.string.review_day))
+                }
+                Button(onClick = { onNavigate(Routes.HISTORY) }, Modifier.fillMaxWidth()) {
+                    Text(stringResource(R.string.history))
+                }
+                Button(onClick = { onNavigate(Routes.STATS) }, Modifier.fillMaxWidth()) {
+                    Text(stringResource(R.string.statistics))
+                }
             }
 
             Spacer(Modifier.height(32.dp))
 
-            // Pomôcka Pre Developera
+            // Помощник разработчика (не меняем)
             Box {
                 Button(onClick = { devMenuExpanded = true }) {
-                    Text("Pomôcka Pre Developera")
+                    Text(stringResource(R.string.help_dev))
                 }
                 DropdownMenu(
                     expanded = devMenuExpanded,
                     onDismissRequest = { devMenuExpanded = false }
                 ) {
                     DropdownMenuItem(
-                        text = { Text("⏮️ Prev Day") },
+                        text = { Text(stringResource(R.string.dev_prev_day)) },
                         onClick = {
                             devMenuExpanded = false
                             onDebugPrevDay()
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("⏭️ Next Day") },
+                        text = { Text(stringResource(R.string.dev_next_day)) },
                         onClick = {
                             devMenuExpanded = false
                             onDebugNextDay()
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("🚀 Run Rollover Now") },   // ← новая опция
+                        text = { Text(stringResource(R.string.dev_run_rollover)) },
                         onClick = {
                             devMenuExpanded = false
                             onRunRolloverNow()
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("🔄 Reset") },
+                        text = { Text(stringResource(R.string.dev_reset)) },
                         onClick = {
                             devMenuExpanded = false
                             onDebugReset()
@@ -141,7 +174,10 @@ fun MainMenuScreen(
             }
 
             Spacer(Modifier.height(16.dp))
-            Text("Current date: $currentDate", fontSize = 14.sp)
+            Text(
+                text = stringResource(R.string.current_date, currentDate),
+                fontSize = 14.sp
+            )
         }
     }
 }

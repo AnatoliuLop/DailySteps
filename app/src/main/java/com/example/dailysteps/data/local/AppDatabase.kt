@@ -9,14 +9,14 @@ import com.example.dailysteps.data.model.*
         DefaultTask::class,
         DailyTask::class,
         DailyDayNote::class,
-        StepEntry::class
+
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun defaultTaskDao(): DefaultTaskDao
     abstract fun dailyTaskDao(): DailyTaskDao
     abstract fun dailyDayNoteDao(): DailyDayNoteDao
-    abstract fun stepEntryDao(): StepEntryDao
+
 }
