@@ -11,24 +11,13 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 
-/**
- * Показывает первые [threshold] элементов списка [items],
- * если их больше — выводит кнопку «Показать все (N)» внизу,
- * при клике разворачивает весь список.
- *
- * @param items        исходный список
- * @param threshold    сколько первых элементов показывать до разворачивания
- * @param modifier     модификатор для LazyColumn
- * @param collapseLabel текст на кнопке (по умолчанию «Показать все»)
- * @param itemContent  @Composable-ленда для рисования одного элемента
- */
+
 @Composable
 fun <T> CollapsibleList(
     items: List<T>,
     threshold: Int = 4,
     modifier: Modifier = Modifier,
     collapseLabel: String = "",
-    // импорт: import androidx.compose.foundation.lazy.rememberLazyListState
     listState: LazyListState = rememberLazyListState(),
     itemContent: @Composable (T) -> Unit
 ) {

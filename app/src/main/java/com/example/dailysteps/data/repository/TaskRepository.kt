@@ -10,7 +10,6 @@ interface TaskRepository {
     suspend fun insert(task: DailyTask): Long
     suspend fun update(task: DailyTask)
     suspend fun delete(task: DailyTask)
-    // ← объявляем новый метод
     fun getByDefaultTaskId(defaultTaskId: Int): Flow<List<DailyTask>>
     fun getAllDates(): Flow<List<String>>
     fun getCompletionRatesInPeriod(start: String, end: String): Flow<List<DateRateEntity>>

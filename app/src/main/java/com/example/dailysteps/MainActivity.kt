@@ -26,14 +26,14 @@ class MainActivity : ComponentActivity() {
             val isDark      by prefs.isDarkTheme.collectAsState(initial = false)
             val localeTag   by prefs.locale     .collectAsState(initial = "en")
 
-            // 1) переключаем AppCompat-локаль (нужна для стандартных View и system UI)
+
             LaunchedEffect(localeTag) {
                 AppCompatDelegate.setApplicationLocales(
                     LocaleListCompat.forLanguageTags(localeTag)
                 )
             }
 
-            // 2) создаём новый Context с нужной локалью для Compose
+
             val baseContext = LocalContext.current
             val localeContext = remember(localeTag) {
                 baseContext.updateLocale(Locale.forLanguageTag(localeTag))
@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
 
             CompositionLocalProvider(
                 LocalContext provides localeContext,
-                // RTL пока не поддерживаем, оставляем LTR
+
                 LocalLayoutDirection provides LayoutDirection.Ltr
             ) {
                 DailyStepsTheme(darkTheme = isDark) {

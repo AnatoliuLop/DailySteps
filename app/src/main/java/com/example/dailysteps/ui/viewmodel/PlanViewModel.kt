@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter
 
 class PlanViewModel(
     prefs: PreferencesManager,
-    private val context: Context,               // ← добавили
+    private val context: Context,
     private val getTasks: GetTasksUseCase,
     private val addTask: AddTaskUseCase,
     private val updateTask: UpdateTaskUseCase,
@@ -27,11 +27,11 @@ class PlanViewModel(
 
 
 
-    // Сначала читаем строку из prefs (или today)
+
     private val dateIsoFlow: Flow<String> = prefs.lastDate
         .map { it.takeIf(String::isNotBlank) ?: LocalDate.now().format(fmt) }
 
-    // Для получения тасков всё ещё конвертируем в LocalDate
+
     val tasks: StateFlow<List<DailyTask>> = dateIsoFlow
         .map { LocalDate.parse(it, fmt) }
         .flatMapLatest { date -> getTasks(date) }

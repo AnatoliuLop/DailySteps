@@ -13,7 +13,7 @@ class SaveDayNoteUseCase(
 ) {
     private val fmt = DateTimeFormatter.ISO_DATE
 
-    /** Записывает заметку для той же prefs.lastDate */
+
     suspend operator fun invoke(noteText: String) {
         val iso = prefs.lastDate.first().takeIf(String::isNotBlank)
             ?: java.time.LocalDate.now().format(fmt)

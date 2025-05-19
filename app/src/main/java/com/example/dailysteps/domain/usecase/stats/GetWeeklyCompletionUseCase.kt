@@ -13,7 +13,7 @@ class GetWeeklyCompletionUseCase(private val repo: TaskRepository) {
                 list
                     .groupBy { it.description }
                     .map { (desc, tasks) ->
-                        // считаем дни, когда хоть раз выполнена
+
                         val distinctDays = tasks.map { it.date }.distinct().size
                         TaskWeeklyCount(desc, distinctDays)
                     }

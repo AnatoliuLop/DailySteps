@@ -9,10 +9,10 @@ import androidx.room.PrimaryKey
 )
 data class DailyTask(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val date: String,             // формат ISO_DATE
-    val defaultTaskId: Int?,      // ссылка на шаблон, nullable для новых задач
+    val date: String,
+    val defaultTaskId: Int?,
     val category: String,
     val description: String,
     val done: Boolean = false,
-    val note: String? = null      // примечание к задаче
+    val note: String? = null
 )

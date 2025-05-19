@@ -18,7 +18,7 @@ class ReminderWorker(
 ) : CoroutineWorker(appContext, params) {
 
     override suspend fun doWork(): Result {
-        // достаём тип уведомления
+
         val type = inputData.getString(KEY_TYPE) ?: return Result.success()
         val ctx = applicationContext
 
@@ -32,7 +32,7 @@ class ReminderWorker(
                 )
             }
             "midday" -> {
-                // проверяем, есть ли невыполненные задачи
+
                 val fmt = DateTimeFormatter.ISO_DATE
                 val iso = ServiceLocator.preferences
                     .lastDate.first()

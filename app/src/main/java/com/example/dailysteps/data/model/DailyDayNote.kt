@@ -5,6 +5,6 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class DailyDayNote(
-    @PrimaryKey val date: String, // ISO_DATE, уникальна
+    @PrimaryKey val date: String,
     val note: String
 )

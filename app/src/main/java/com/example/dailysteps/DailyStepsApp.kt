@@ -23,7 +23,7 @@ class DailyStepsApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        // 1. Создаём Room-базу
+
         val db = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java,
@@ -32,21 +32,21 @@ class DailyStepsApp : Application() {
             .fallbackToDestructiveMigration()
             .build()
 
-        // 2. Создаём PreferencesManager
+
         val prefs = PreferencesManager(applicationContext)
 
-        // 3. Инициализируем ServiceLocator
+
         ServiceLocator.init(db, prefs)
 
-        // 4. Создаём канал уведомлений (только на Android O+)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationHelper.createNotificationChannel(this)
         }
 
-        // 5. Ежесуточный rollover
+
         scheduleDailyRollover()
 
-        // 6. Три напоминания: утро, день, вечер
+
         scheduleDailyReminders()
     }
 
@@ -76,11 +76,11 @@ class DailyStepsApp : Application() {
     }
 
     private fun scheduleDailyReminders() {
-        // Утро в 8:00
-        schedulePeriodicReminder("morning", 11, 40, "reminder_morning")
-        // День в 12:00
+
+        schedulePeriodicReminder("morning", 8, 8, "reminder_morning")
+
         schedulePeriodicReminder("midday", 12, 12, "reminder_midday")
-        // Вечер в 20:00
+
         schedulePeriodicReminder("evening", 20, 20, "reminder_evening")
     }
 

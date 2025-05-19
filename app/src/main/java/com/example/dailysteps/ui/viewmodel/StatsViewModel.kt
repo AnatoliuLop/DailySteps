@@ -22,11 +22,11 @@ class StatsViewModel(
 ) : ViewModel() {
     private val fmt = DateTimeFormatter.ISO_DATE
 
-    // 1) поток даты ISO
+
     private val dateIsoFlow: Flow<String> = prefs.lastDate
         .map { it.takeIf(String::isNotBlank) ?: LocalDate.now().format(fmt) }
 
-    // 2) процент за «рабочий» день
+
     val percentDone: StateFlow<Float> = dateIsoFlow
         .flatMapLatest { iso ->
             getRates(iso, iso)
@@ -34,20 +34,16 @@ class StatsViewModel(
         .map { list -> list.firstOrNull()?.pct?.toFloat() ?: 0f }
         .stateIn(viewModelScope, SharingStarted.Lazily, 0f)
 
-    // 3) стрик: если хотите считать стрик _до_ того же дня,
-    //    переделайте GetStreakUseCase, чтобы он принимал датуIso
-    //    или здесь просто дергайте dateIsoFlow и внутри GetStreakUseCase
+
     val streak: StateFlow<Int> = getStreak()
         .stateIn(viewModelScope, SharingStarted.Lazily, 0)
 
-    // 4) taskStreaks без изменений
+
     val taskStreaks: StateFlow<List<TaskStreak>> = getTaskStreaks()
         .map { domainList -> domainList.map { TaskStreak(it.name, it.days) } }
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    /** 5) Недельная статистика:
-     * считаем from = dateIso.minusWeeks(1), до = dateIso
-     */
+
     val weeklyStats: StateFlow<List<TaskWeeklyCount>> = dateIsoFlow
         .flatMapLatest { iso ->
             val fromIso = LocalDate.parse(iso, fmt)

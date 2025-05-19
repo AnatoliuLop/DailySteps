@@ -50,7 +50,7 @@ fun DailyStepsNavGraph() {
             )
         }
 
-        // План на день
+
         composable(Routes.PLAN) {
             val context = LocalContext.current
             val vm: PlanViewModel = viewModel(factory = SimpleFactory {
@@ -76,7 +76,7 @@ fun DailyStepsNavGraph() {
             )
         }
 
-        // Обзор дня
+
         composable(Routes.REVIEW) {
             val context = LocalContext.current
             val vm: ReviewViewModel = viewModel(factory = SimpleFactory {
@@ -87,7 +87,7 @@ fun DailyStepsNavGraph() {
                     ServiceLocator.provideToggleDoneUseCase(),
                     ServiceLocator.provideGetDayNoteUseCase(),
                     ServiceLocator.provideSaveDayNoteUseCase()
-                    // Если вы всё ещё переносите задачи, сюда же провайдьте AddTaskUseCase
+
                 )
             })
 
@@ -97,8 +97,8 @@ fun DailyStepsNavGraph() {
                 onToggle      = vm::toggle,
                 onSaveNote    = vm::saveNote,
                 onCompleteDay = vm::completeDay,
-                onDismissCompletion = vm::clearCompletionMessage,  // ← прокинули
-                completionMessage = vm.completionMessage,           // ← прокинули
+                onDismissCompletion = vm::clearCompletionMessage,
+                completionMessage = vm.completionMessage,
                 onBack        = { navController.popBackStack() },
                 onSettings    = { navController.navigate(Routes.SETTINGS) },
                 onNext        = { navController.navigate(Routes.HISTORY) }
@@ -107,15 +107,15 @@ fun DailyStepsNavGraph() {
 
 
 
-        // История
+
         composable(Routes.HISTORY) {
             val vm: HistoryViewModel = viewModel(factory = SimpleFactory {
                 HistoryViewModel(
                     ServiceLocator.preferences,
                     ServiceLocator.provideGetHistoryDatesUseCase(),
                     ServiceLocator.provideGetCompletionRatesUseCase(),
-                    ServiceLocator.provideGetTasksUseCase(),       // ← новый
-                    ServiceLocator.provideGetDayNoteUseCase()     // ← новый
+                    ServiceLocator.provideGetTasksUseCase(),
+                    ServiceLocator.provideGetDayNoteUseCase()
                 )
             })
             HistoryScreen(
@@ -132,7 +132,7 @@ fun DailyStepsNavGraph() {
             )
         }
 
-        // Статистика
+
         composable(Routes.STATS) {
             val vm: StatsViewModel = viewModel(factory = SimpleFactory {
                 StatsViewModel(
@@ -153,7 +153,7 @@ fun DailyStepsNavGraph() {
             )
         }
 
-        //  Экран настроек
+
         composable(Routes.SETTINGS) {
             val prefs = ServiceLocator.preferences
             // Собираем из Flow текущее состояние
@@ -162,11 +162,11 @@ fun DailyStepsNavGraph() {
             val scope = rememberCoroutineScope()
 
             SettingsDialog(
-                currentLocale = locale,                    // используем локальную переменную
+                currentLocale = locale,
                 onLocaleChange = { newLoc ->
                     scope.launch { prefs.setLocale(newLoc) }
                 },
-                currentTheme = isDark,                     // используем локальную переменную
+                currentTheme = isDark,
                 onThemeChange = { dark ->
                     scope.launch { prefs.setDarkTheme(dark) }
                 },

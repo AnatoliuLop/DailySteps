@@ -34,7 +34,7 @@ fun MainMenuScreen(
     onDebugPrevDay: () -> Unit,
     onDebugNextDay: () -> Unit,
     onDebugReset: () -> Unit,
-    onRunRolloverNow: () -> Unit         // ← новый коллбэк
+    onRunRolloverNow: () -> Unit
 ) {
     val prefs = ServiceLocator.preferences
     val scope = rememberCoroutineScope()
@@ -71,7 +71,7 @@ fun MainMenuScreen(
         }
     ) { padding ->
         val scroll = rememberScrollState()
-        // узнаём ориентацию экрана
+
         val configuration = LocalConfiguration.current
         val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
@@ -83,7 +83,7 @@ fun MainMenuScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // Стрик
+
             if (streakVal > 0) {
                 Text(
                     text = pluralStringResource(R.plurals.streak_days, streakVal, streakVal),
@@ -98,7 +98,7 @@ fun MainMenuScreen(
             }
 
             if (isLandscape) {
-                // две строки по две кнопки
+
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     Button(onClick = { onNavigate(Routes.PLAN) }, Modifier.weight(1f)) {
                         Text(stringResource(R.string.daily_plan))
@@ -116,7 +116,7 @@ fun MainMenuScreen(
                     }
                 }
             } else {
-                // портрет: четыре кнопки в столбик
+
                 Button(onClick = { onNavigate(Routes.PLAN) }, Modifier.fillMaxWidth()) {
                     Text(stringResource(R.string.daily_plan))
                 }
@@ -133,7 +133,7 @@ fun MainMenuScreen(
 
             Spacer(Modifier.height(32.dp))
 
-            // Помощник разработчика (не меняем)
+
             Box {
                 Button(onClick = { devMenuExpanded = true }) {
                     Text(stringResource(R.string.help_dev))

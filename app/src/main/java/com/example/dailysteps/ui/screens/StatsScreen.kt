@@ -39,7 +39,7 @@ fun StatsScreen(
     val streakList by taskStreaks.collectAsState(initial = emptyList())
     val weekly by weeklyStats.collectAsState(initial = emptyList())
 
-    // 1) Выбор цвета дуги
+
     val arcColor = when {
         pct == 0f              -> Color.LightGray
         pct < 0.5f             -> Color.Red
@@ -47,7 +47,7 @@ fun StatsScreen(
         else                   -> Color(0xFF4CAF50)
     }
 
-    // 2) Мотивация без раскраски, увеличенный размер
+
     val msg = when {
         pct == 0f              -> stringResource(R.string.msg_zero)
         pct < 0.5f             -> stringResource(R.string.msg_low)
@@ -58,7 +58,7 @@ fun StatsScreen(
     Scaffold(
         topBar = { StandardTopBar(stringResource(R.string.statistics), onBack, onSettings) }
     ) { padding ->
-        // добавляем вертикальный скролл
+
         val scroll = rememberScrollState()
         Column(
             Modifier
@@ -67,7 +67,7 @@ fun StatsScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // --- Средний процент ---
+
             Text(
                 text = stringResource(R.string.todays_completion_rate),
                 fontSize = 20.sp
@@ -93,7 +93,6 @@ fun StatsScreen(
 
             Divider()
 
-            // --- Weekly completion ---
             Text(
                 text = stringResource(R.string.completed_last_week),
                 fontSize = 20.sp

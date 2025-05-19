@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-// Доменный DTO (переименован, чтобы не путать с UI-моделью)
+
 data class DomainTaskStreak(val name: String, val days: Int)
 
 class GetTaskStreaksUseCase(
@@ -21,7 +21,7 @@ class GetTaskStreaksUseCase(
             combine(defaults.map { dt: DefaultTask ->
                 taskRepo.getByDefaultTaskId(dt.id)
                     .map { dailyList ->
-                        // сортируем по дате и считаем подряд выполненные с конца
+
                         val sorted = dailyList.sortedBy { LocalDate.parse(it.date, fmt) }
                         var cnt = 0
                         for (t in sorted.reversed()) {

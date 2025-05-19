@@ -39,11 +39,11 @@ fun HistoryScreen(
     onClearSelection: () -> Unit,
     onBack:           () -> Unit,
     onSettings:       () -> Unit,
-    prefs: PreferencesManager      // передаём prefs
+    prefs: PreferencesManager
 ) {
     val fmt = DateTimeFormatter.ISO_DATE
 
-    // Собираем потоки
+
     val dates       by calendarDates.collectAsState()
     val rates       by historyRates.collectAsState()
     val tasks       by tasksForDate.collectAsState()
@@ -80,7 +80,7 @@ fun HistoryScreen(
             }
         }
 
-        // Диалог с деталями — теперь прокручиваемый
+
         if (selIso != null) {
             AlertDialog(
                 onDismissRequest = onClearSelection,
@@ -89,7 +89,7 @@ fun HistoryScreen(
                     Column(
                         Modifier
                             .fillMaxWidth()
-                            .heightIn(max = 300.dp)             // ограничиваем высоту
+                            .heightIn(max = 300.dp)
                             .verticalScroll(rememberScrollState())
                             .padding(8.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)

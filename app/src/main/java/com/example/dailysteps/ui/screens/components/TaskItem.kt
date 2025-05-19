@@ -28,10 +28,10 @@ fun TaskItem(
     var isEditing by remember(task.id) { mutableStateOf(false) }
     var draftDesc by remember(task.id) { mutableStateOf(task.description) }
     val focusManager = LocalFocusManager.current
-    // локальный state для заметки
+
     var noteText by remember(task.id) { mutableStateOf(task.note.orEmpty()) }
 
-    // синхронизируемся с тем, что хранится в БД, когда task.note меняется «извне»
+
     LaunchedEffect(task.note) {
         noteText = task.note.orEmpty()
     }
@@ -43,7 +43,7 @@ fun TaskItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // --- Description Edit (без изменений) ---
+
         if (isEditing) {
             OutlinedTextField(
                 value = draftDesc,
@@ -71,7 +71,7 @@ fun TaskItem(
             }
         }
 
-        // --- Note Edit: сохраняем только при уходе фокуса или на Done ---
+
         OutlinedTextField(
             value = noteText,
             onValueChange = { noteText = it },
@@ -80,7 +80,7 @@ fun TaskItem(
                 .weight(1f)
                 .defaultMinSize(TextFieldDefaults.MinHeight)
                 .onFocusChanged { focusState ->
-                    // когда потеряли фокус — сохраняем
+
                     if (!focusState.isFocused) {
                         onNoteChange(task, noteText)
                     }
@@ -88,7 +88,7 @@ fun TaskItem(
             maxLines = Int.MAX_VALUE,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(onDone = {
-                // при нажатии Done тоже теряем фокус, что сработает onFocusChanged
+
                 focusManager.clearFocus()
             })
         )

@@ -35,7 +35,7 @@ import kotlinx.coroutines.flow.StateFlow
 @Composable
 fun DailyPlanScreen(
     tasks: StateFlow<List<DailyTask>>,
-    error: SharedFlow<String>,               // ← новый
+    error: SharedFlow<String>,
     onAdd: (String) -> Unit,
     onNoteChange: (DailyTask, String) -> Unit,
     onEdit: (DailyTask, String) -> Unit,
@@ -51,7 +51,7 @@ fun DailyPlanScreen(
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    // 2) ловим ошибки и показываем
+
     LaunchedEffect(error) {
         error.collect { msg ->
             snackbarHostState.showSnackbar(msg)
@@ -77,7 +77,7 @@ fun DailyPlanScreen(
                          ),
                         keyboardActions = KeyboardActions(
                             onDone = {
-                                // срабатывает по нажатию «Done» на клавиатуре
+
                                 if (newText.isNotBlank()) {
                                     onAdd(newText.trim())
                                     newText = ""
@@ -91,7 +91,7 @@ fun DailyPlanScreen(
                             onAdd(newText.trim())
                             newText = ""
                         }
-                        // скрываем клавиатуру по кнопке «Add»
+
                         keyboardController?.hide()
                     }) {
                         Text(stringResource(R.string.add))
@@ -104,7 +104,7 @@ fun DailyPlanScreen(
             }
         }
     ) { padding ->
-        // 2) Передаём состояние скролла, если нужно восстанавливать позицию
+
         val listState = rememberSaveable(saver = LazyListState.Saver) {
             LazyListState()
         }
@@ -115,7 +115,7 @@ fun DailyPlanScreen(
                 .padding(padding)
                 .fillMaxSize(),
             collapseLabel = stringResource(R.string.show_all_tasks),
-            listState = listState    // ← добавляем параметр
+            listState = listState
         ) { task ->
             Column {
                 TaskItem(

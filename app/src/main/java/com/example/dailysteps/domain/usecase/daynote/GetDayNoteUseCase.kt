@@ -16,7 +16,7 @@ class GetDayNoteUseCase(
 ) {
     private val fmt = DateTimeFormatter.ISO_DATE
 
-    /** Теперь берет дату из prefs.lastDate, а не из LocalDate.now() */
+
     operator fun invoke(dateIso: String? = null): Flow<DailyDayNote?> {
         return if (dateIso != null) {
             repo.getNote(dateIso)

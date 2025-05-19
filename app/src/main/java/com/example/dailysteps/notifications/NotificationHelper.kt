@@ -15,7 +15,6 @@ import com.example.dailysteps.R
 object NotificationHelper {
     private const val CHANNEL_ID = "daily_steps_reminder_channel"
     private const val CHANNEL_NAME = "DailySteps Reminders"
-    /** Обязательно вызываем один раз при старте приложения (Android O+) */
     fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
 
@@ -29,21 +28,18 @@ object NotificationHelper {
         val mgr = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         mgr.createNotificationChannel(channel)
     }
-    /** Шлёт уведомление с заданным id */
     fun showNotification(
         context: Context,
         notifId: Int,
         title: String,
         message: String
     ) {
-        // для Android 13+ проверяем POST_NOTIFICATIONS
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
                     context,
                     Manifest.permission.POST_NOTIFICATIONS
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-                // нет разрешения — ничего не шлём
                 return
             }
         }

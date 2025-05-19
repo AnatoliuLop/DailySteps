@@ -19,7 +19,7 @@ class PreferencesManager(private val context: Context) {
         private val LAST_DATE_KEY = stringPreferencesKey("last_date")
     }
 
-    // темы
+
     val isDarkTheme: Flow<Boolean> = context.dataStore.data
         .map { it[DARK_KEY] ?: false }
 
@@ -27,7 +27,7 @@ class PreferencesManager(private val context: Context) {
         it[DARK_KEY] = value
     }
 
-    // локаль
+
     val locale: Flow<String> = context.dataStore.data
         .map { it[LOCALE_KEY] ?: "en" }
 
@@ -35,15 +35,15 @@ class PreferencesManager(private val context: Context) {
         it[LOCALE_KEY] = value
     }
 
-    // цель шагов
+
     val stepGoal: Flow<Int> = context.dataStore.data
-        .map { it[STEP_GOAL_KEY] ?: 10000 } // по умолчанию 10000 шагов
+        .map { it[STEP_GOAL_KEY] ?: 10000 }
 
     suspend fun setStepGoal(value: Int) = context.dataStore.edit {
         it[STEP_GOAL_KEY] = value
     }
 
-    // последний обработанный день
+
     val lastDate: Flow<String> = context.dataStore.data
         .map { it[LAST_DATE_KEY] ?: "" }
 

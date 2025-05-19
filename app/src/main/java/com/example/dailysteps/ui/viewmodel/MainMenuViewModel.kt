@@ -15,7 +15,7 @@ class MainMenuViewModel(
     getStreak: GetStreakUseCase
 ) : ViewModel() {
 
-    // Стрик дней
+
     val streak: StateFlow<Int> = getStreak()
         .stateIn(viewModelScope, SharingStarted.Lazily, 0)
 

@@ -37,30 +37,28 @@ object ServiceLocator {
     fun provideNoteRepo() = DailyDayNoteRepositoryImpl(db.dailyDayNoteDao())
 
 
-    // === Use-cases: Tasks ===
+
     fun provideGetTasksUseCase()    = GetTasksUseCase(provideTaskRepository())
     fun provideAddTaskUseCase()     = AddTaskUseCase(provideTaskRepository())
     fun provideToggleDoneUseCase()  = ToggleDoneUseCase(provideTaskRepository())
     fun provideUpdateTaskUseCase()  = UpdateTaskUseCase(provideTaskRepository())
     fun provideDeleteTaskUseCase()  = DeleteTaskUseCase(provideTaskRepository())
 
-    // === Use-cases: DayNote ===
+
     fun provideGetDayNoteUseCase(): GetDayNoteUseCase =
         GetDayNoteUseCase(provideNoteRepo(), preferences)
 
     fun provideSaveDayNoteUseCase(): SaveDayNoteUseCase =
         SaveDayNoteUseCase(provideNoteRepo(), preferences)
 
-    // ========== History use-cases ==========
+
     fun provideGetHistoryDatesUseCase() =
         GetHistoryDatesUseCase(provideTaskRepository())
 
     fun provideGetCompletionRatesUseCase() =
         GetCompletionRatesUseCase(provideTaskRepository())
 
-    // ========== Statistics use-cases ==========
-    // Для сегодняшнего одного дня мы тоже можем взять те же rates,
-    // но удобно обернуть его в специальный use-case:
+
     fun provideGetWeeklyCompletionUseCase() =
         GetWeeklyCompletionUseCase(provideTaskRepository())
 
@@ -70,7 +68,7 @@ object ServiceLocator {
     fun provideGetStreakUseCase() = GetStreakUseCase(provideTaskRepository(), preferences)
     fun provideGetTaskStreaksUseCase() =
         GetTaskStreaksUseCase(provideDefaultRepo(), provideTaskRepository())
-    // === Инициализация нового дня ===
+
     suspend fun initNewDay(date: String) {
         val defaults = provideDefaultRepo().getAll().first()
         val daily = defaults.map { dt ->

@@ -7,9 +7,7 @@ import com.example.dailysteps.domain.usecase.tasks.GetTasksUseCase
 import com.example.dailysteps.domain.usecase.tasks.AddTaskUseCase
 import com.example.dailysteps.domain.usecase.tasks.ToggleDoneUseCase
 
-/**
- * Factory для MainViewModel (3 usecases).
- */
+
 class ViewModelFactory(
     private val get: GetTasksUseCase,
     private val add: AddTaskUseCase,
@@ -24,9 +22,7 @@ class ViewModelFactory(
     }
 }
 
-/**
- * Простой factory для вьюмоделей с одним-двумя параметрами.
- */
+
 class SimpleFactory<T : ViewModel>(val creator: () -> T) : ViewModelProvider.Factory {
     override fun <U : ViewModel> create(modelClass: Class<U>): U {
         @Suppress("UNCHECKED_CAST")

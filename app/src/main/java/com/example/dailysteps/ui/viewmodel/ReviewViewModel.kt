@@ -46,18 +46,18 @@ class ReviewViewModel(
         saveDayNoteUseCase(text)
     }
 
-    // 1) Новый flow для сообщения
+
     private val _completionMessage = MutableStateFlow<String?>(null)
     val completionMessage: StateFlow<String?> = _completionMessage.asStateFlow()
 
-    // 2) completeDay считает прогресс и выставляет сообщение
+
     fun completeDay() = viewModelScope.launch {
         val date      = dateFlow.first()
         val todayTasks = getTasksUseCase(date).first()
         val total     = todayTasks.size
         val doneCount = todayTasks.count { it.done }
 
-        // выбираем ID строки
+
         val msgRes = when {
             doneCount == 1 ->
                 R.string.review_msg_first_step
@@ -73,10 +73,10 @@ class ReviewViewModel(
                 R.string.review_msg_try_one
         }
 
-        // грузим сам текст из ресурсов
+
         _completionMessage.value = context.getString(msgRes)
     }
-    // 3) сброс сообщения (при закрытии диалога)
+
     fun clearCompletionMessage() = viewModelScope.launch {
         _completionMessage.value = null
     }

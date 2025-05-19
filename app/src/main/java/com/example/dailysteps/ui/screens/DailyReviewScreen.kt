@@ -43,7 +43,7 @@ fun DailyReviewScreen(
     val note by dayNote.collectAsState()
     val msg by completionMessage.collectAsState()
     val keyboardController = LocalSoftwareKeyboardController.current
-    // Сохраняем состояние скролла списка между пересозданиями
+
     val listState: LazyListState = rememberLazyListState()
     Scaffold(
         topBar = {

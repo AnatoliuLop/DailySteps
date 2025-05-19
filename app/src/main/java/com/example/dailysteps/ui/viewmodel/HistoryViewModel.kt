@@ -23,18 +23,18 @@ class HistoryViewModel(
 ) : ViewModel() {
     private val fmt = DateTimeFormatter.ISO_DATE
 
-    // 1) поток рабочих дат для History (предыдущие 30 дней)
+
     private val toIsoFlow = prefs.lastDate
         .map { it.takeIf(String::isNotBlank) ?: LocalDate.now().format(fmt) }
     private val fromIsoFlow = toIsoFlow
         .map { LocalDate.parse(it, fmt).minusDays(29).format(fmt) }
 
-    // 2) список дат для календаря
+
     val calendarDates: StateFlow<List<String>> =
         getDates()
             .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    // 3) процент выполнения по датам (для диаграммы, если нужна)
+
     val historyRates: StateFlow<List<DateRateEntity>> =
         fromIsoFlow
             .combine(toIsoFlow) { fromIso, toIso -> fromIso to toIso }
@@ -43,32 +43,32 @@ class HistoryViewModel(
             }
             .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    // 4) состояние выбранной даты (ISO string)
+
     private val _selectedDate = MutableStateFlow<String?>(null)
     val selectedDate: StateFlow<String?> = _selectedDate
 
-    // 5) задачи на выбранную дату
+
     val tasksForDate: StateFlow<List<DailyTask>> = _selectedDate
         .filterNotNull()
         .map { LocalDate.parse(it, fmt) }
         .flatMapLatest { date -> getTasks(date) }
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    // 6) заметка дня на выбранную дату
+
     val dayNoteForDate: StateFlow<String> = _selectedDate
         .filterNotNull()
         .flatMapLatest { iso ->
-            getDayNote(iso)             // предполагаем изменение use-case
+            getDayNote(iso)
                 .map { it?.note.orEmpty() }
         }
         .stateIn(viewModelScope, SharingStarted.Lazily, "")
 
-    // Выбор даты из UI
+
     fun selectDate(iso: String) {
         viewModelScope.launch { _selectedDate.value = iso }
     }
 
-    // Сброс выбора (например, при закрытии диалога)
+
     fun clearSelection() {
         viewModelScope.launch { _selectedDate.value = null }
     }

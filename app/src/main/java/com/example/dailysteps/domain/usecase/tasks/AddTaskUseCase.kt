@@ -10,12 +10,7 @@ import java.time.format.DateTimeFormatter
 class AddTaskUseCase(private val repo: TaskRepository) {
     private val fmt = DateTimeFormatter.ISO_DATE
 
-    /**
-     * @param description  текст задачи
-     * @param category     категория
-     * @param dateIso      дата в формате ISO (по умолчанию — сегодня)
-     * @param defaultTaskId  id шаблона задачи (0, если это "ручная" задача)
-     */
+
     suspend operator fun invoke(
         description: String,
         category: String = "general",

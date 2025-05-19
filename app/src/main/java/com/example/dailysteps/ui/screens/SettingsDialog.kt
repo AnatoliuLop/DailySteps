@@ -24,7 +24,7 @@ fun SettingsDialog(
         title = { Text(stringResource(R.string.settings)) },
         text  = {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                // Language
+
                 Text(stringResource(R.string.language))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(
@@ -40,7 +40,7 @@ fun SettingsDialog(
                     Text(stringResource(R.string.slovak))
                 }
 
-                // Theme
+
                 Text(stringResource(R.string.theme))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(R.string.light))

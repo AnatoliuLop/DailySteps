@@ -19,7 +19,7 @@ class DailyRolloverWorker(
         val prefs = ServiceLocator.preferences
         val isoFmt = DateTimeFormatter.ISO_DATE
 
-        // 1) Узнаём «рабочую» дату вчера (из prefs или today-1)
+
         val lastIso = prefs.lastDate.first().takeIf { it.isNotBlank() }
         val yesterday = if (lastIso != null) {
             LocalDate.parse(lastIso, isoFmt)
@@ -29,7 +29,7 @@ class DailyRolloverWorker(
         val yesterdayIso = yesterday.format(isoFmt)
         val todayIso     = yesterday.plusDays(1).format(isoFmt)
 
-        // 2) Берём задачи вчера, фильтруем несделанные и вставляем их на сегодня
+
         val tasksYesterday = repo.getTasks(yesterdayIso).first()
         tasksYesterday
             .filterNot { it.done }
@@ -37,7 +37,7 @@ class DailyRolloverWorker(
                 repo.insert(task.copy(id = 0, date = todayIso))
             }
 
-        // 3) Обновляем prefs.lastDate = todayIso
+
         prefs.setLastDate(todayIso)
 
         return Result.success()
